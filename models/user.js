@@ -7,11 +7,11 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var userSchema = new Schema({
-    firstContact: Number,
+    sessionStart: Number,
     lastRequest: Number,
-    active: Boolean,
-    boarded: Boolean,
-    enteredMain: Boolean,
+    active: {type: Boolean, default: true},
+    boarded: {type: Boolean, default: false},
+    enteredMain: {type: Boolean, default: false},
     boardingRoom: String
 });
 

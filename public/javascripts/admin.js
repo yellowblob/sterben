@@ -5,7 +5,7 @@ jQuery(document).ready(function($) {
             for(var i = 0; i < data.length; i++){
                var newhtml = "<div class='row'>";
                newhtml += "<div class='col'>" + data[i]._id + "</div>";
-               newhtml += "<div class='col'>" + data[i].room + "</div>";
+               newhtml += "<div class='col'>" + data[i].boardingRoom + "</div>";
                newhtml += "<div class='col'><button type='button' class='btn btn-primary' id='" + data[i]._id + "'>Send to main</button></div>";
                newhtml += "</div";
                $("#activeBoardings").append(newhtml);
