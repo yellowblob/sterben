@@ -5,15 +5,18 @@ const MongoClient = mongo.MongoClient;
 const mongoUrl = "mongodb://localhost:27017/";
 const bbb = require('bigbluebutton-js');
 const http = bbb.http
+var user_controller = require('../controllers/userController');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
     if (!req.cookies.userID) {
         MongoClient.connect(mongoUrl, { useUnifiedTopology: true }, function(err, db) {
-            if (err) throw err;
+            if (err) console.log(err);
             var dbo = db.db("sterben");
             var user = {
-                sessionTime: Date.now(),
+                sessionStart: Date.now(),
+                lastRequest: Date.now(),
+                active: true,
                 boarded: false,
                 main: false,
                 room: null
@@ -33,11 +36,11 @@ router.get('/', function(req, res, next) {
 
 router.get('/board', function(req, res, next) {
     MongoClient.connect(mongoUrl, { useUnifiedTopology: true }, function(err, db) {
-        if (err) throw err;
+        if (err) console.log(err);
         var dbo = db.db("sterben");
         dbo.collection("onboarding").findOne({ _id: new mongo.ObjectID(req.cookies.userID) }, function(err, user) {
-            if (err) throw err;
-            dbo.collection("onboarding").find({ sessionTime: { $lt: user.SessionTime }, boarded: false }).toArray(function(err, queue) {
+            if (err) console.log(err);
+            dbo.collection("onboarding").find({ sessionStart: { $lt: user.sessionStart }, boarded: false, active: true }).toArray(function(err, queue) {
                 console.log(queue);
                 if (queue.length === 0) {
                     const api = bbb.api(
@@ -84,7 +87,7 @@ router.get('/board', function(req, res, next) {
 
 router.get('/main', function(req, res, next) {
     MongoClient.connect(mongoUrl, { useUnifiedTopology: true }, function(err, db) {
-        if (err) throw err;
+        if (err) console.log(err);
         var dbo = db.db("sterben");
         dbo.collection("onboarding").findOne({ _id: new mongo.ObjectID(req.cookies.userID) }, function(err, user) {
             if (user.main === true) {
