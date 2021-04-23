@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        <%= title %>
+    </title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="javascripts/onboarding.js"></script>
+</head>
+
+<body>
+    <h1>
+        <%= title %>
+    </h1>
+    <div id="page">
+        <p>Willkommen bei
+            <%= title %>
+        </p>
+        <div id="message">Bitte haben Sie einen Augenblick Geduld. <span id="queue">Der Einlass beginnt in wenigen Augenblicken.</span><br>
+            Bitte lassen Sie dieses Browserfenster geöffnet.
+            Sollten Sie vor 20:00 auf diese Seite gekommen sein. Löschen Sie bitte Ihre cookies und laden Sie die Seite neu.<br>
+            Firefox: -> Chronik -> neueste Chronik löschen<br>
+            Chrome: https://support.google.com/chrome/answer/95647?co=GENIE.Platform%3DDesktop&hl=de
+        </div>
+    </div>
+    <div id="bbb-frame"></div>
+</body>
+
+</html>
