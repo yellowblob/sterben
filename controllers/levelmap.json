@@ -1,0 +1,6 @@
+{
+    "scan_ticket": 0,
+    "boarding_queue": 1,
+    "boarding": 2,
+    "main": 3
+}

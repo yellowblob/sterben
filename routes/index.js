@@ -7,6 +7,4 @@ router.get('/', user_controller.init);
 
 router.get('/board', user_controller.board);
 
-router.get('/main', user_controller.main);
-
 module.exports = router;

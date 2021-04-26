@@ -25,7 +25,7 @@ app.use('/admin', adminRouter);
 //Set up mongoose connection
 var mongoose = require('mongoose');
 var mongoDB = 'mongodb://localhost:27017/sterben';
-mongoose.connect(mongoDB, { useNewUrlParser: true , useUnifiedTopology: true});
+mongoose.connect(mongoDB, { useNewUrlParser: true , useUnifiedTopology: true, useFindAndModify: false});
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
