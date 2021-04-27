@@ -1,15 +1,17 @@
-import QrScanner from "../javascripts/qr-scanner.min.js";
-QrScanner.WORKER_PATH = '../javascripts/qr-scanner-worker.min.js';
+import QrScanner from "../javascripts/qr-scanner.js";
+import { getAnswers } from "../javascripts/questions.js";
+QrScanner.WORKER_PATH = '../javascripts/worker.js';
 
 const standartTimeout = 5000;
 
 let scanner;
 let interval;
+let timer;
 
 jQuery(document).ready(function($) {
 
     ask4Task();
-
+    
     function ask4Task(params) {
         $.get("/board", params, function(data, status) {
             console.log(data);
@@ -47,9 +49,12 @@ jQuery(document).ready(function($) {
                 if (error) {
                     console.log(error);
                 } else {
-                    result = result.substring(3);
-                    console.log(result);
-                    ask4Task({ ticketId: result });
+                    let answers = getAnswers(result.codewords);
+                    if(answers !== null){
+                        console.log(answers);
+                        result = result.data.substring(3);
+                        ask4Task({ ticketId: result });
+                    }
                 }
             });
             scanner.start();
@@ -72,7 +77,10 @@ jQuery(document).ready(function($) {
                 $("#queue").text("Es sind noch " + data.queue + " Personen vor Ihnen in der Schlange");
             }
         }
-        setTimeout(ask4Task(), 5000);
+        clearTimeout(timer);
+        timer = setTimeout(function(){
+            ask4Task();
+        }, standartTimeout);
     }
 
     function display_boarding_room(data) {
@@ -83,7 +91,10 @@ jQuery(document).ready(function($) {
             $("#bbb-frame").html('<iframe src="' + data.url + '" frameborder="0" width="100%" height="100%" scrolling="no" name="bbb" allow="microphone *; camera *"></iframe>');
             setTimeout(ask4Task);
         }
-        setTimeout(ask4Task, standartTimeout);
+        clearTimeout(timer);
+        timer = setTimeout(function(){
+            ask4Task();
+        }, standartTimeout);
     }
 
     function display_outside_bus(data) {
