@@ -344,7 +344,7 @@ function getAnswers(scannedCodewords) {
             }
         }
     }
-    if choices.length < 14 {
+    if (choices.length < 14) {
     	return null;
     }
     choices.sort((a, b) => (a.short > b.short) ? 1 : -1);
