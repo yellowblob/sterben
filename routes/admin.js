@@ -11,4 +11,6 @@ router.get('/refresh', user_controller.getUsersBoarding);
 
 router.get('/setmain', user_controller.sendUser2MainRoom);
 
+router.get('/startJourney', user_controller.startJourney);
+
 module.exports = router;

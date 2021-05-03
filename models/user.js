@@ -12,7 +12,9 @@ var userSchema = new Schema({
     lastRequest: Number,
     active: {type: Boolean, default: true},
     level: {type: Number, default: 0},
-    boardingRoom: String
+    prevLevel: {type: Number, default: 0},
+    boardingRoom: String,
+    playbackTime: Number
 });
 
 //Export function to create "SomeModel" model class

@@ -1,0 +1,12 @@
+// Custom.scss
+
+@import url("https://use.typekit.net/ccf5rqw.css");
+ 
+$font-family-sans-serif: neue-haas-grotesk-display, sans-serif !default;
+$headings-font-family: xants, sans-serif !default;
+
+$green: #6caf2a;
+$primary: $green;
+ 
+// Required
+@import "../../node_modules/bootstrap/scss/bootstrap";

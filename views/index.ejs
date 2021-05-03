@@ -4,31 +4,33 @@
 <head>
     <meta charset="utf-8" />
     <title>
-        Besser Sterben - eine Testfahrt mit dem Tod
+        Besser Sterben - eine Kaffeefahrt mit dem Tod
     </title>
+    <link rel="stylesheet" href="/stylesheets/customBootstrap.css">
+    <link rel='stylesheet' href='https://use.typekit.net/ccf5rqw.css'>
     <link rel='stylesheet' href='/stylesheets/style.css' />
 </head>
 
 <body>
-    <h1>
-        Besser Sterben - eine Testfahrt mit dem Tod
-    </h1>
-    <div id="page">
-        <p>Willkommen bei Besser Sterben - eine Testfahrt mit dem Tod
-        </p>
-        <div id="message">Bitte gestatten Sie der Website die Benutzung der Kamera und scannen Sie den QR-Code auf Ihrem Ticket, um zu starten.
+    <div id="page" class="container">
+        <h1>
+            Besser Sterben - eine Kaffeefahrt mit dem Tod
+        </h1>
+        <div id="message">
+            <p>
+                Willkommen zur heutigen Vorstellung. Schön, dass Sie da sind.
+            </p>
+            <p>
+                Wir werden gleich beginnen. Haben Sie alles bereit? Sie benötigen das Magazin, ihr Ticket, den großen QR-Code und den Edding.<br>
+                Wenn Sie bereit sind, klicken sie auf <i>Start</i>. Anschließend wird sich diese Seit ein den Vollbildmodus begeben.
+            </p>
+            <button id="start-show" type="button" class="btn btn-primary">Start</button>
         </div>
-        <div id="responseMessage"></div>
     </div>
-    <div id="qr-scanner">
-        <div>
-            <video id="qr-video"></video><br>
-        </div>
-    </div>
-    <div id="bbb-frame"></div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="https://player.vimeo.com/api/player.js"></script>
     <script type="module" src="javascripts/onboarding.js"></script>
-
 </body>
 
 </html>

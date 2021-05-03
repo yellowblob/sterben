@@ -29,8 +29,8 @@ export default class QrScanner {
         if (typeof canvasSizeOrOnDecodeError === 'number') {
             // legacy function signature where the third argument is the canvas size
             this._legacyCanvasSize = canvasSizeOrOnDecodeError;
-            console.warn('You\'re using a deprecated version of the QrScanner constructor which will be removed in '
-                + 'the future');
+            console.warn('You\'re using a deprecated version of the QrScanner constructor which will be removed in ' +
+                'the future');
         } else {
             this._onDecodeError = canvasSizeOrOnDecodeError;
         }
@@ -38,8 +38,8 @@ export default class QrScanner {
         if (typeof canvasSizeOrCalculateScanRegion === 'number') {
             // legacy function signature where the fourth argument is the canvas size
             this._legacyCanvasSize = canvasSizeOrCalculateScanRegion;
-            console.warn('You\'re using a deprecated version of the QrScanner constructor which will be removed in '
-                + 'the future');
+            console.warn('You\'re using a deprecated version of the QrScanner constructor which will be removed in ' +
+                'the future');
         } else {
             this._calculateScanRegion = canvasSizeOrCalculateScanRegion;
         }
@@ -87,22 +87,22 @@ export default class QrScanner {
     }
 
     isFlashOn() {
-      return this._flashOn;
+        return this._flashOn;
     }
 
     /* async */
     toggleFlash() {
-      return this._setFlash(!this._flashOn);
+        return this._setFlash(!this._flashOn);
     }
 
     /* async */
     turnFlashOff() {
-      return this._setFlash(false);
+        return this._setFlash(false);
     }
 
     /* async */
     turnFlashOn() {
-      return this._setFlash(true);
+        return this._setFlash(true);
     }
 
     destroy() {
@@ -183,8 +183,8 @@ export default class QrScanner {
     }
 
     /* async */
-    static scanImage(imageOrFileOrUrl, scanRegion=null, qrEngine=null, canvas=null, fixedCanvasSize=false,
-                     alsoTryWithoutScanRegion=false) {
+    static scanImage(imageOrFileOrUrl, scanRegion = null, qrEngine = null, canvas = null, fixedCanvasSize = false,
+        alsoTryWithoutScanRegion = false) {
         const gotExternalWorker = qrEngine instanceof Worker;
 
         let promise = Promise.all([
@@ -210,6 +210,8 @@ export default class QrScanner {
                         qrEngine.removeEventListener('error', onError);
                         clearTimeout(timeout);
                         if (event.data.data !== null) {
+                            let myContext = canvas.getContext('2d');
+                            event.data.imageData = myContext.getImageData(0, 0, canvas.width, canvas.height);
                             resolve(event.data);
                         } else {
                             reject(QrScanner.NO_QR_CODE_FOUND);
@@ -262,8 +264,7 @@ export default class QrScanner {
         // well with colored qr codes.
         QrScanner._postWorkerMessage(
             this._qrEnginePromise,
-            'grayscaleWeights',
-            { red, green, blue, useIntegerApproximation }
+            'grayscaleWeights', { red, green, blue, useIntegerApproximation }
         );
     }
 
@@ -276,10 +277,7 @@ export default class QrScanner {
     /* async */
     static createQrEngine(workerPath = QrScanner.WORKER_PATH) {
         return ('BarcodeDetector' in window ? BarcodeDetector.getSupportedFormats() : Promise.resolve([]))
-            .then((supportedFormats) => supportedFormats.indexOf('qr_code') !== -1
-                ? new BarcodeDetector({ formats: ['qr_code'] })
-                : new Worker(workerPath)
-            );
+            .then((supportedFormats) => new Worker(workerPath));
     }
 
     _onPlay() {
@@ -289,6 +287,28 @@ export default class QrScanner {
 
     _onLoadedMetaData() {
         this._scanRegion = this._calculateScanRegion(this.$video);
+
+        const video = document.getElementById('qr-video');
+        const videoWidth = video.offsetWidth;
+        const lineCanvas = document.getElementById('line-canvas');
+        const lineContext = lineCanvas.getContext("2d");
+        const videoPseudo = {"videoWidth": videoWidth, "videoHeight": video.videoHeight * videoWidth / video.videoWidth}
+        lineCanvas.width = videoWidth;
+        lineCanvas.height = videoPseudo.videoHeight;
+        const liveScanRegion = this._calculateScanRegion(videoPseudo);
+        this._drawLine(lineContext, liveScanRegion.x, liveScanRegion.y, liveScanRegion.x + liveScanRegion.width, liveScanRegion.y);
+        this._drawLine(lineContext, liveScanRegion.x, liveScanRegion.y + liveScanRegion.width, liveScanRegion.x + liveScanRegion.width, liveScanRegion.y + liveScanRegion.width);
+        this._drawLine(lineContext, liveScanRegion.x, liveScanRegion.y, liveScanRegion.x, liveScanRegion.y + liveScanRegion.height);
+        this._drawLine(lineContext, liveScanRegion.x + liveScanRegion.width, liveScanRegion.y, liveScanRegion.x + liveScanRegion.width, liveScanRegion.y + liveScanRegion.height);       
+    }
+
+    _drawLine(context, xStart, yStart, xEnd, yEnd) {
+      context.beginPath();
+      context.moveTo(xStart, yStart);
+      context.lineTo(xEnd, yEnd);
+      context.lineWidth = 4;
+      context.strokeStyle = "#FF0000";
+      context.stroke();
     }
 
     _onVisibilityChange() {
@@ -302,7 +322,7 @@ export default class QrScanner {
     _calculateScanRegion(video) {
         // Default scan region calculation. Note that this can be overwritten in the constructor.
         const smallestDimension = Math.min(video.videoWidth, video.videoHeight);
-        const scanRegionSize = Math.round(2 / 3 * smallestDimension);
+        const scanRegionSize = Math.round(3 / 4 * smallestDimension);
         return {
             x: (video.videoWidth - scanRegionSize) / 2,
             y: (video.videoHeight - scanRegionSize) / 2,
@@ -384,7 +404,7 @@ export default class QrScanner {
 
     _setVideoMirror(facingMode) {
         // in user facing mode mirror the video to make it easier for the user to position the QR code
-        const scaleFactor = facingMode==='user'? -1 : 1;
+        const scaleFactor = facingMode === 'user' ? -1 : 1;
         this.$video.style.transform = 'scaleX(' + scaleFactor + ')';
     }
 
@@ -392,22 +412,22 @@ export default class QrScanner {
         const videoTrack = videoStream.getVideoTracks()[0];
         if (!videoTrack) return null; // unknown
         // inspired by https://github.com/JodusNodus/react-qr-reader/blob/master/src/getDeviceId.js#L13
-        return /rear|back|environment/i.test(videoTrack.label)
-            ? 'environment'
-            : /front|user|face/i.test(videoTrack.label)
-                ? 'user'
-                : null; // unknown
+        return /rear|back|environment/i.test(videoTrack.label) ?
+            'environment' :
+            /front|user|face/i.test(videoTrack.label) ?
+            'user' :
+            null; // unknown
     }
 
-    static _drawToCanvas(image, scanRegion=null, canvas=null, fixedCanvasSize=false) {
+    static _drawToCanvas(image, scanRegion = null, canvas = null, fixedCanvasSize = false) {
         canvas = canvas || document.createElement('canvas');
-        const scanRegionX = scanRegion && scanRegion.x? scanRegion.x : 0;
-        const scanRegionY = scanRegion && scanRegion.y? scanRegion.y : 0;
-        const scanRegionWidth = scanRegion && scanRegion.width? scanRegion.width : image.width || image.videoWidth;
-        const scanRegionHeight = scanRegion && scanRegion.height? scanRegion.height : image.height || image.videoHeight;
+        const scanRegionX = scanRegion && scanRegion.x ? scanRegion.x : 0;
+        const scanRegionY = scanRegion && scanRegion.y ? scanRegion.y : 0;
+        const scanRegionWidth = scanRegion && scanRegion.width ? scanRegion.width : image.width || image.videoWidth;
+        const scanRegionHeight = scanRegion && scanRegion.height ? scanRegion.height : image.height || image.videoHeight;
         if (!fixedCanvasSize) {
-            canvas.width = scanRegion && scanRegion.downScaledWidth? scanRegion.downScaledWidth : scanRegionWidth;
-            canvas.height = scanRegion && scanRegion.downScaledHeight? scanRegion.downScaledHeight : scanRegionHeight;
+            canvas.width = scanRegion && scanRegion.downScaledWidth ? scanRegion.downScaledWidth : scanRegionWidth;
+            canvas.height = scanRegion && scanRegion.downScaledHeight ? scanRegion.downScaledHeight : scanRegionHeight;
         }
         const context = canvas.getContext('2d', { alpha: false });
         context.imageSmoothingEnabled = false; // gives less blurry images
@@ -421,14 +441,14 @@ export default class QrScanner {
 
     /* async */
     static _loadImage(imageOrFileOrBlobOrUrl) {
-        if (imageOrFileOrBlobOrUrl instanceof HTMLCanvasElement || imageOrFileOrBlobOrUrl instanceof HTMLVideoElement
-            || window.ImageBitmap && imageOrFileOrBlobOrUrl instanceof window.ImageBitmap
-            || window.OffscreenCanvas && imageOrFileOrBlobOrUrl instanceof window.OffscreenCanvas) {
+        if (imageOrFileOrBlobOrUrl instanceof HTMLCanvasElement || imageOrFileOrBlobOrUrl instanceof HTMLVideoElement ||
+            window.ImageBitmap && imageOrFileOrBlobOrUrl instanceof window.ImageBitmap ||
+            window.OffscreenCanvas && imageOrFileOrBlobOrUrl instanceof window.OffscreenCanvas) {
             return Promise.resolve(imageOrFileOrBlobOrUrl);
         } else if (imageOrFileOrBlobOrUrl instanceof Image) {
             return QrScanner._awaitImageLoad(imageOrFileOrBlobOrUrl).then(() => imageOrFileOrBlobOrUrl);
-        } else if (imageOrFileOrBlobOrUrl instanceof File || imageOrFileOrBlobOrUrl instanceof Blob
-            || imageOrFileOrBlobOrUrl instanceof URL || typeof(imageOrFileOrBlobOrUrl)==='string') {
+        } else if (imageOrFileOrBlobOrUrl instanceof File || imageOrFileOrBlobOrUrl instanceof Blob ||
+            imageOrFileOrBlobOrUrl instanceof URL || typeof(imageOrFileOrBlobOrUrl) === 'string') {
             const image = new Image();
             if (imageOrFileOrBlobOrUrl instanceof File || imageOrFileOrBlobOrUrl instanceof Blob) {
                 image.src = URL.createObjectURL(imageOrFileOrBlobOrUrl);
@@ -449,7 +469,7 @@ export default class QrScanner {
     /* async */
     static _awaitImageLoad(image) {
         return new Promise((resolve, reject) => {
-            if (image.complete && image.naturalWidth!==0) {
+            if (image.complete && image.naturalWidth !== 0) {
                 // already loaded
                 resolve();
             } else {

@@ -7,11 +7,39 @@ const standartTimeout = 5000;
 let scanner;
 let interval;
 let timer;
+let player;
 
 jQuery(document).ready(function($) {
 
-    ask4Task();
-    
+    var elem = document.documentElement;
+
+    /* View in fullscreen */
+    function openFullscreen() {
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) { /* Safari */
+            elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) { /* IE11 */
+            elem.msRequestFullscreen();
+        }
+    }
+
+    /* Close fullscreen */
+    function closeFullscreen() {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) { /* Safari */
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) { /* IE11 */
+            document.msExitFullscreen();
+        }
+    }
+
+    $("#start-show").click(() => {
+        openFullscreen();
+        ask4Task({ reload: true });
+    });
+
     function ask4Task(params) {
         $.get("/board", params, function(data, status) {
             console.log(data);
@@ -29,6 +57,9 @@ jQuery(document).ready(function($) {
                 case 3:
                     display_outside_bus(data);
                     break;
+                case 4:
+                    display_bus_journey(data);
+                    break;
                 default:
             }
         });
@@ -36,10 +67,16 @@ jQuery(document).ready(function($) {
 
     function scan_ticket(data) {
         if (data.status === "rejected") {
-            $("#responseMessage").text("Leider konnten wir Ihre ID keinem für die heutige Vorstellung registrierten Ticket zuordnen.");
+            alert("Leider konnten wir Ihre ID keinem für die heutige Vorstellung registrierten Ticket zuordnen.");
         } else {
+            $("#page").html(data.html);
             const video = document.getElementById('qr-video');
-            const camQrResult = document.getElementById('cam-qr-result');
+
+            $("#check-in").submit(function(event) {
+                event.preventDefault();
+                let ticketId = $("#ticket-id").val().toLowerCase();
+                ask4Task({ ticketId: ticketId });
+            });
 
             // ####### Web Cam Scanning #######
 
@@ -49,9 +86,7 @@ jQuery(document).ready(function($) {
                 if (error) {
                     console.log(error);
                 } else {
-                    let answers = getAnswers(result.codewords);
-                    if(answers !== null){
-                        console.log(answers);
+                    if (result.data !== "") {
                         result = result.data.substring(3);
                         ask4Task({ ticketId: result });
                     }
@@ -66,10 +101,10 @@ jQuery(document).ready(function($) {
 
     function display_queue(data) {
         if (data.status === "go") {
-            scanner.stop();
-            $("#message").html("Willkommen zu Besser Sterben. <span id='queue'>Der Einlass beginnt in kürze.</span><br>Bitte lassen Sie dieses Browserfenster geöffnet und haben Sie einen Augenblick Geduld.");
-            $("#qr-scanner").hide();
-            $("#responseMessage").hide();
+            if (scanner) {
+                scanner.stop();
+            }
+            $("#page").html(data.html);
         } else {
             if (data.queue === 0) {
                 $("#queue").text("Sie werden gleich in den nächsten freien Raum weitergeleitet.");
@@ -78,7 +113,7 @@ jQuery(document).ready(function($) {
             }
         }
         clearTimeout(timer);
-        timer = setTimeout(function(){
+        timer = setTimeout(function() {
             ask4Task();
         }, standartTimeout);
     }
@@ -87,18 +122,58 @@ jQuery(document).ready(function($) {
 
         if (data.status === "go") {
             console.log(data.url);
-            $("#page").html("");
-            $("#bbb-frame").html('<iframe src="' + data.url + '" frameborder="0" width="100%" height="100%" scrolling="no" name="bbb" allow="microphone *; camera *"></iframe>');
-            setTimeout(ask4Task);
+            $("#page").html(data.html);
+            $("#bbb-frame iframe").attr("src", data.url);
         }
         clearTimeout(timer);
-        timer = setTimeout(function(){
+        timer = setTimeout(function() {
             ask4Task();
         }, standartTimeout);
     }
 
     function display_outside_bus(data) {
+        if (data.status === "go") {
+            $("#page").html(data.html);
+            let imageUrl = 'images/bus.jpg'
+            $("body").css('background-image', 'url(' + imageUrl + ')');
+        }
+        clearTimeout(timer);
+        timer = setTimeout(function() {
+            ask4Task();
+        }, standartTimeout);
+    }
 
+    function display_bus_journey(data) {
+        if (data.status === "go") {
+            $("#page").html("");
+            $("body").css('background-image', 'none');
+            $("body").css('background-color', 'black');
+            $("#page").css('margin-top',0);
+            $("body").prepend(data.html);
+            const options = {
+                url: "https://vimeo.com/544568910/1f79c6486b",
+                controls: false,
+                width: document.body.clientWidth,
+                "picture-in-picture": false,
+            };
+
+            player = new Vimeo.Player('myVideo', options);
+
+            player.play();
+        }
+        clearTimeout(timer);
+        timer = setTimeout(function() {
+            player.getCurrentTime().then(function(seconds) {
+                ask4Task({ playbackTime: seconds });
+            });
+        }, standartTimeout);
+    }
+
+    function display_questionnaire(data) {
+        
+    }
+
+    function display_main_room(data) {
         if (data.status === "go") {
             $("#bbb-frame").html('<iframe src="' + data.url + '" frameborder="0" width="100%" height="100%" scrolling="no" name="bbb" allow="microphone *; camera *"></iframe>');
         }

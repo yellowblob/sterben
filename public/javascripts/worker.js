@@ -38,11 +38,11 @@ function decode(data) {
         inversionAttempts: inversionAttempts,
         greyScaleWeights: grayscaleWeights,
     });
-    console.log(result.codewords);
     self.postMessage({
         type: 'qrResult',
         data: result? result.data : null,
         codewords: result? result.codewords : null,
+        imageData: result? data : null,
     });
 }
 
