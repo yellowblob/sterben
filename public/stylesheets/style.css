@@ -1,8 +1,7 @@
-
 /* level 0 */
 
 #qr-scanner {
-	position: relative;
+    position: relative;
 }
 
 #line-canvas {
@@ -15,14 +14,24 @@
 /* level 1 */
 
 #bbb-frame {
-	width: 100%;
-	height: 80vh;
+    width: 100%;
+    height: 80vh;
 }
 
 #page {
-	margin-top: 50px;
+    margin-top: 50px;
 }
 
-#vimeo-wrapper {
-	height: 100vh !important;
+#vimeo-wrapper,
+#vimeo-wrapper-2 {
+    height: 100vh !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: black;
+}
+
+#vimeo-wrapper-wrapper,
+#vimeo-wrapper-wrapper-2 {
+    display: none;
 }

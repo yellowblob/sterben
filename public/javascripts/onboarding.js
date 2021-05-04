@@ -8,6 +8,9 @@ let scanner;
 let interval;
 let timer;
 let player;
+let player2
+let answers;
+let button2;
 
 jQuery(document).ready(function($) {
 
@@ -59,6 +62,9 @@ jQuery(document).ready(function($) {
                     break;
                 case 4:
                     display_bus_journey(data);
+                    break;
+                case 5:
+                    display_questionnaire(data);
                     break;
                 default:
             }
@@ -137,6 +143,7 @@ jQuery(document).ready(function($) {
             let imageUrl = 'images/bus.jpg'
             $("body").css('background-image', 'url(' + imageUrl + ')');
         }
+        $("#guests").text(data.boarded + " / " + data.users);
         clearTimeout(timer);
         timer = setTimeout(function() {
             ask4Task();
@@ -145,21 +152,44 @@ jQuery(document).ready(function($) {
 
     function display_bus_journey(data) {
         if (data.status === "go") {
-            $("#page").html("");
-            $("body").css('background-image', 'none');
-            $("body").css('background-color', 'black');
-            $("#page").css('margin-top',0);
-            $("body").prepend(data.html);
+            $("#page").after(data.html);
+
             const options = {
                 url: "https://vimeo.com/544568910/1f79c6486b",
                 controls: false,
                 width: document.body.clientWidth,
-                "picture-in-picture": false,
+                pip: false,
+                autopause: false,
+                muted: true,
             };
 
             player = new Vimeo.Player('myVideo', options);
+            player.play();
+
+            let button = $("#board");
+
+
+
+            player.on('timeupdate', function(data) {
+                if (data.seconds >= 1.0) {
+                    player.pause();
+                    button.attr("style", "display: inline !important");
+                    button.click(() => {
+                        console.log("clicked");
+                        player.setMuted(false);
+                        $("#vimeo-wrapper-wrapper").fadeIn(1500);
+                        player.play();
+                    });
+
+                    player.off('timeupdate');
+                }
+            });
 
             player.play();
+
+            player.on('ended', () => {
+                ask4Task({ playback: false });
+            });
         }
         clearTimeout(timer);
         timer = setTimeout(function() {
@@ -170,7 +200,108 @@ jQuery(document).ready(function($) {
     }
 
     function display_questionnaire(data) {
-        
+        $("#page").html(data.html);
+        $("#vimeo-wrapper-wrapper").remove();
+
+        $("body").append('<div id="vimeo-wrapper-wrapper"><div id="vimeo-wrapper" class="row h-100"><div id="myVideo" class="col-sm-12 my-auto"></div></div></div>');
+        const options = {
+            id: 435993761,
+            controls: false,
+            width: document.body.clientWidth,
+            pip: false,
+            autopause: false,
+            muted: true,
+        };
+
+        player = new Vimeo.Player('myVideo', options);
+
+        player.on('timeupdate', function(data) {
+            if (data.seconds >= 1.0) {
+                player.pause();
+                player.off('timeupdate');
+            }
+        });
+
+        player.play();
+
+        const video = document.getElementById('qr-video');
+
+        // ####### Web Cam Scanning #######
+
+        QrScanner.hasCamera().then(hasCamera => console.log(hasCamera));
+
+        scanner = new QrScanner(video, (result, error) => {
+            if (error) {
+                //console.log(error);
+            } else {
+                answers = getAnswers(result.codewords);
+                if (answers !== null) {
+
+                    $('#qr-scanner').hide();
+                    $('#message').html("Vielen Dank für Ihre Anfrage. Sie erhalten folgendes Angebot:");
+                    let newHtml = "";
+                    let answersMinified = "";
+                    let videoId = "";
+                    answers.forEach((answer, index) => {
+                        newHtml += "<h4>" + answer.question + "</h4>";
+                        newHtml += "<p>" + answer.answer.text + "</p>";
+                        answersMinified += answer.answer.short + " ";
+                        if (answer.answer.short.includes("11")) {
+                            videoId = answer.answer.id;
+                        }
+                    });
+                    newHtml += '<button id="correct" type="button" class="btn btn-success">weiter</button>';
+                    $("#responseMessage").html(newHtml);
+                    $("body").append('<div id="vimeo-wrapper-wrapper-2"><div id="vimeo-wrapper-2" class="row h-100"><div id="myVideo2" class="col-sm-12 my-auto"></div></div></div>');
+
+                    console.log("VideoId: " + videoId);
+
+                    const options2 = {
+                        id: videoId,
+                        controls: false,
+                        width: document.body.clientWidth,
+                        pip: false,
+                        autopause: false,
+                        muted: true,
+                    };
+
+                    player2 = new Vimeo.Player('myVideo2', options2);
+                    player2.play();
+                    button2 = $("#correct");
+                    player2.on('timeupdate', start_video);
+                    player2.on('timeupdate', switch_video);
+
+                    console.log(answersMinified);
+                    scanner.stop();
+                }
+            }
+        });
+        scanner.start();
+    }
+
+    const switch_video = function(data) {
+        if (data.seconds >= 30) {
+            player2.off('timeupdate', switch_video);
+            console.log("30");
+            player.play();
+            $("#vimeo-wrapper-wrapper").show();
+            $("#vimeo-wrapper-wrapper-2").hide();
+            player2.pause();
+        }
+    }
+
+    const start_video = function(data) {
+        if (data.seconds >= 1.0) {
+            player2.pause();
+            button2.click(() => {
+                console.log("clicked");
+                player.setMuted(false);
+                player2.setMuted(false);
+                $("#vimeo-wrapper-wrapper-2").fadeIn(1500);
+                player2.play();
+                player2.off('timeupdate', start_video);
+            });
+        }
     }
 
     function display_main_room(data) {
