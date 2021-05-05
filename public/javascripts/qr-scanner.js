@@ -287,28 +287,6 @@ export default class QrScanner {
 
     _onLoadedMetaData() {
         this._scanRegion = this._calculateScanRegion(this.$video);
-
-        const video = document.getElementById('qr-video');
-        const videoWidth = video.offsetWidth;
-        const lineCanvas = document.getElementById('line-canvas');
-        const lineContext = lineCanvas.getContext("2d");
-        const videoPseudo = {"videoWidth": videoWidth, "videoHeight": video.videoHeight * videoWidth / video.videoWidth}
-        lineCanvas.width = videoWidth;
-        lineCanvas.height = videoPseudo.videoHeight;
-        const liveScanRegion = this._calculateScanRegion(videoPseudo);
-        this._drawLine(lineContext, liveScanRegion.x, liveScanRegion.y, liveScanRegion.x + liveScanRegion.width, liveScanRegion.y);
-        this._drawLine(lineContext, liveScanRegion.x, liveScanRegion.y + liveScanRegion.width, liveScanRegion.x + liveScanRegion.width, liveScanRegion.y + liveScanRegion.width);
-        this._drawLine(lineContext, liveScanRegion.x, liveScanRegion.y, liveScanRegion.x, liveScanRegion.y + liveScanRegion.height);
-        this._drawLine(lineContext, liveScanRegion.x + liveScanRegion.width, liveScanRegion.y, liveScanRegion.x + liveScanRegion.width, liveScanRegion.y + liveScanRegion.height);       
-    }
-
-    _drawLine(context, xStart, yStart, xEnd, yEnd) {
-      context.beginPath();
-      context.moveTo(xStart, yStart);
-      context.lineTo(xEnd, yEnd);
-      context.lineWidth = 4;
-      context.strokeStyle = "#FF0000";
-      context.stroke();
     }
 
     _onVisibilityChange() {

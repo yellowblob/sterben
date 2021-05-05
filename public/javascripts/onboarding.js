@@ -11,8 +11,19 @@ let player;
 let player2
 let answers;
 let button2;
+let insideWidth;
 
 jQuery(document).ready(function($) {
+
+    $('#help-toggle').click(() => {
+        $("#help").animate({ left: 0 });
+        $("body").animate({ "padding-left": "20vw" })
+    });
+
+    $('#help-close').click(() => {
+        $("#help").animate({ left: "-20vw" });
+        $("body").animate({ "padding-left": "0" })
+    });
 
     var elem = document.documentElement;
 
@@ -39,8 +50,11 @@ jQuery(document).ready(function($) {
     }
 
     $("#start-show").click(() => {
-        openFullscreen();
-        ask4Task({ reload: true });
+        insideWidth = $("#message").width();
+        console.log(insideWidth);
+        $('#content').fadeOut(() => {
+            ask4Task({ reload: true });
+        });
     });
 
     function ask4Task(params) {
@@ -66,6 +80,12 @@ jQuery(document).ready(function($) {
                 case 5:
                     display_questionnaire(data);
                     break;
+                case 6:
+                    display_cemetry(data);
+                    break;
+                case 7:
+                    display_after_talk(data);
+                    break;
                 default:
             }
         });
@@ -73,9 +93,19 @@ jQuery(document).ready(function($) {
 
     function scan_ticket(data) {
         if (data.status === "rejected") {
+            $("#ticket-id").val("");
             alert("Leider konnten wir Ihre ID keinem für die heutige Vorstellung registrierten Ticket zuordnen.");
         } else {
-            $("#page").html(data.html);
+            $("#content").html(data.html);
+
+            if ($("#help").css("left") === "0px") {
+                $("#help").animate({ left: "-20vw" });
+                $("body").animate({ "padding-left": "0" }, () => {
+                    $("#help-content").html(data.help);
+                })
+            } else {
+                $("#help-content").html(data.help);
+            }
             const video = document.getElementById('qr-video');
 
             $("#check-in").submit(function(event) {
@@ -100,9 +130,38 @@ jQuery(document).ready(function($) {
             });
             scanner.start();
 
-            // for debugging
-            window.scanner = scanner;
+            let videoWidth, videoHeight;
+            let getVideoSize = function() {
+                const videoWidth = insideWidth;
+                console.log(video.offsetWidth);
+                const lineCanvas = document.getElementById('line-canvas');
+                const lineContext = lineCanvas.getContext("2d");
+                const videoPseudo = { "videoWidth": videoWidth, "videoHeight": video.videoHeight * videoWidth / video.videoWidth }
+                lineCanvas.width = videoWidth;
+                lineCanvas.height = videoPseudo.videoHeight;
+                const liveScanRegion = calculateScanRegion(videoPseudo);
+                drawLine(lineContext, liveScanRegion.x, liveScanRegion.y, liveScanRegion.x + liveScanRegion.width, liveScanRegion.y);
+                drawLine(lineContext, liveScanRegion.x, liveScanRegion.y + liveScanRegion.width, liveScanRegion.x + liveScanRegion.width, liveScanRegion.y + liveScanRegion.width);
+                drawLine(lineContext, liveScanRegion.x, liveScanRegion.y, liveScanRegion.x, liveScanRegion.y + liveScanRegion.height);
+                drawLine(lineContext, liveScanRegion.x + liveScanRegion.width, liveScanRegion.y, liveScanRegion.x + liveScanRegion.width, liveScanRegion.y + liveScanRegion.height);
+
+                $("#content").fadeIn();
+                $("html, body").animate({ scrollTop: $(document).height() - $(window).height() });
+                video.removeEventListener('playing', getVideoSize, false);
+            };
+
+            video.addEventListener('playing', getVideoSize, false);
+
         }
+    }
+
+    function drawLine(context, xStart, yStart, xEnd, yEnd) {
+        context.beginPath();
+        context.moveTo(xStart, yStart);
+        context.lineTo(xEnd, yEnd);
+        context.lineWidth = 4;
+        context.strokeStyle = "#66B441";
+        context.stroke();
     }
 
     function display_queue(data) {
@@ -203,27 +262,6 @@ jQuery(document).ready(function($) {
         $("#page").html(data.html);
         $("#vimeo-wrapper-wrapper").remove();
 
-        $("body").append('<div id="vimeo-wrapper-wrapper"><div id="vimeo-wrapper" class="row h-100"><div id="myVideo" class="col-sm-12 my-auto"></div></div></div>');
-        const options = {
-            id: 435993761,
-            controls: false,
-            width: document.body.clientWidth,
-            pip: false,
-            autopause: false,
-            muted: true,
-        };
-
-        player = new Vimeo.Player('myVideo', options);
-
-        player.on('timeupdate', function(data) {
-            if (data.seconds >= 1.0) {
-                player.pause();
-                player.off('timeupdate');
-            }
-        });
-
-        player.play();
-
         const video = document.getElementById('qr-video');
 
         // ####### Web Cam Scanning #######
@@ -252,31 +290,76 @@ jQuery(document).ready(function($) {
                     });
                     newHtml += '<button id="correct" type="button" class="btn btn-success">weiter</button>';
                     $("#responseMessage").html(newHtml);
-                    $("body").append('<div id="vimeo-wrapper-wrapper-2"><div id="vimeo-wrapper-2" class="row h-100"><div id="myVideo2" class="col-sm-12 my-auto"></div></div></div>');
-
-                    console.log("VideoId: " + videoId);
-
-                    const options2 = {
-                        id: videoId,
-                        controls: false,
-                        width: document.body.clientWidth,
-                        pip: false,
-                        autopause: false,
-                        muted: true,
-                    };
-
-                    player2 = new Vimeo.Player('myVideo2', options2);
-                    player2.play();
-                    button2 = $("#correct");
-                    player2.on('timeupdate', start_video);
-                    player2.on('timeupdate', switch_video);
-
                     console.log(answersMinified);
                     scanner.stop();
+                    ask4Task({ videoId: videoId });
                 }
             }
         });
         scanner.start();
+    }
+
+    function display_cemetry(data) {
+        if (data.status === "go") {
+            let videoId = data.videoId;
+            console.log(videoId);
+            $("body").append(data.html);
+            const options = {
+                id: 435993761,
+                controls: false,
+                width: document.body.clientWidth,
+                pip: false,
+                autopause: false,
+                muted: true,
+            };
+
+            const options2 = {
+                id: videoId,
+                controls: false,
+                width: document.body.clientWidth,
+                pip: false,
+                autopause: false,
+                muted: true,
+            };
+
+            player = new Vimeo.Player('myVideo', options);
+
+            player.on('timeupdate', function(data) {
+                if (data.seconds >= 1.0) {
+                    player.pause();
+                    player.off('timeupdate');
+                }
+            });
+
+            player.play();
+
+            player.on('ended', () => {
+                ask4Task({ playback: false });
+            });
+
+            player2 = new Vimeo.Player('myVideo-2', options2);
+            player2.play();
+            button2 = $("#correct");
+            player2.on('timeupdate', start_video);
+            player2.on('timeupdate', switch_video);
+            if (data.reload === true) {
+                setTimeout(() => {
+                    player.setMuted(false);
+                    player2.setMuted(false);
+                    $("#vimeo-wrapper-wrapper-2").fadeIn(1500);
+                    player2.play();
+                    player2.off('timeupdate', start_video);
+                }, 1500);
+            }
+        }
+        clearTimeout(timer);
+        timer = setTimeout(function() {
+            player.getCurrentTime().then(function(seconds) {
+                player2.getCurrentTime().then(function(seconds2) {
+                    ask4Task({ playbackTime: seconds, playbackTime2: seconds2 });
+                });
+            });
+        }, standartTimeout);
     }
 
     const switch_video = function(data) {
@@ -304,10 +387,29 @@ jQuery(document).ready(function($) {
         }
     }
 
-    function display_main_room(data) {
+    function display_after_talk(data) {
         if (data.status === "go") {
-            $("#bbb-frame").html('<iframe src="' + data.url + '" frameborder="0" width="100%" height="100%" scrolling="no" name="bbb" allow="microphone *; camera *"></iframe>');
+            if (player) {
+                player.destroy();
+                player2.destroy();
+            }
+            $("#vimeo-wrapper-wrapper").remove();
+            $("#vimeo-wrapper-wrapper-2").remove();
+            $("#page").remove();
+            $("body").prepend(data.html);
         }
+    }
+
+    function calculateScanRegion(video) {
+        // Default scan region calculation. Note that this can be overwritten in the constructor.
+        const smallestDimension = Math.min(video.videoWidth, video.videoHeight);
+        const scanRegionSize = Math.round(3 / 4 * smallestDimension);
+        return {
+            x: (video.videoWidth - scanRegionSize) / 2,
+            y: (video.videoHeight - scanRegionSize) / 2,
+            width: scanRegionSize,
+            height: scanRegionSize,
+        };
     }
 
 });

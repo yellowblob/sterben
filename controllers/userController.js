@@ -1,10 +1,12 @@
 const users = require('../models/user');
+const ejs = require('ejs');
 
 const bbb = require('bigbluebutton-js');
 const http = bbb.http
 
 const levelmap = require("./levelmap.json");
 const html = require("../views/html.json")
+const help = require("../views/help.json")
 
 exports.init = function(req, res) {
     res.render('index');
@@ -23,12 +25,12 @@ exports.board = function(req, res) {
                     user.level = 1;
                     res
                         .cookie('user', user._id, { maxAge: 2 * 60 * 60 * 1000, httpOnly: true, SameSite: "strict" })
-                        .json({ status: "go", level: user.level, html: html[1] });
+                        .json({ status: "go", level: user.level, html: html[1], help: help[1] });
                     user.save();
                 }
             });
         } else {
-            res.json({ status: "go", level: 0, html: html[0] });
+            res.json({ status: "go", level: 0, html: html[0], help: help[0] });
         }
     } else {
         users.findById(req.cookies.user, function(err, user) {
@@ -41,8 +43,15 @@ exports.board = function(req, res) {
             if (req.query.reload && user.level === 2) {
                 user.level = 1;
             }
-            if (req.query.playback) {
-                user.level = 5;
+            if (req.query.playback ) {
+                if(user.level < 5){
+                    user.level = 5;
+                } else {
+                    user.level = 7;
+                }
+            }
+            if (req.query.videoId) {
+                user.level = 6;
             }
             user.save(() => {
                 let level = user.level;
@@ -143,7 +152,7 @@ function wait_before_bus(req, res, user) {
 function bus_journey(req, res, user) {
     if (levelChange(user) || req.query.reload) {
         let playbackTime = user.playbackTime ? user.playbackTime : 0;
-        res.json({ status: "go", level: user.level, html: html[user.level], playbackTime: playbackTime})
+        res.json({ status: "go", level: user.level, html: html[user.level], playbackTime: playbackTime })
     } else {
         user.playbackTime = req.query.playbackTime;
         user.save();
@@ -156,10 +165,26 @@ function scan_questionnaire(req, res, user) {
     if (levelChange(user) || req.query.reload) {
         res.json({ status: "go", level: user.level, html: html[user.level] })
     } else {
-        
+
     }
 }
 
+// ******* 6 cemetry ******* //
+function cemetry(req, res, user) {
+    if (levelChange(user) || req.query.reload) {
+        user.videoId = req.query.videoId ? req.query.videoId : user.videoId;
+        user.save();
+        let reload = req.query.reload ? true : false;
+        res.json({ status: "go", level: user.level, html: html[user.level], videoId: user.videoId, reload: reload })
+    } else {
+        user.playbackTime = req.query.playbackTime;
+        user.playbackTime2 = req.query.playbackTime2;
+        user.save();
+        res.json({ status: "wait", level: user.level })
+    }
+}
+
+// ******* 7 after talk ******* //
 function after_talk(req, res, user) {
     const meetingID = process.env.MEETING_ID;
     const attendeePW = process.env.ATTENDEE_PW;
@@ -168,7 +193,14 @@ function after_talk(req, res, user) {
         process.env.SECRET
     );
     const attendeeUrl = api.administration.join(req.cookies.user, meetingID, attendeePW);
-    res.json({ status: "go", level: user.level, url: attendeeUrl });
+    let html = "";
+    console.log(attendeeUrl);
+    ejs.renderFile('views/7_after_talk.ejs', {attendeeUrl: attendeeUrl}, function(err, str){
+        console.log(err);
+        console.log(str);
+        html = str;
+    });
+    res.json({ status: "go", level: user.level, url: attendeeUrl, html: html });
 }
 
 function levelChange(user) {

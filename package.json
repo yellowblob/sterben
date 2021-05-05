@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "start": "nodemon ./bin/www",
-    "style":"sass public/stylesheets/customBootstrap.scss | postcss --use autoprefixer -o public/stylesheets/customBootstrap.css",
-    "style-min":"sass public/stylesheets/customBootstrap.scss --style compressed | postcss --use autoprefixer -o public/stylesheets/customBootstrap.min.css",
-    "style-all":"npm-run-all --parallel style style-min"
+    "style": "sass public/stylesheets/customBootstrap.scss | postcss --use autoprefixer -o public/stylesheets/customBootstrap.css",
+    "style-min": "sass public/stylesheets/customBootstrap.scss --style compressed | postcss --use autoprefixer -o public/stylesheets/customBootstrap.min.css",
+    "style-all": "npm-run-all --parallel style style-min"
   },
   "dependencies": {
     "autoprefixer": "^10.2.5",

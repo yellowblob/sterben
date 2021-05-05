@@ -1,9 +1,14 @@
 const fs = require('fs');
-let exportJson = [];
 
-readFiles("views/html/");
+const folders = ["html", "help"];
 
-function readFiles(dirname, onFileContent, onError) {
+folders.forEach((folder) => {
+    readFiles(folder);
+});
+
+function readFiles(folder, onFileContent, onError) {
+    let exportJson = [];
+    let dirname = "views/" + folder + "/";
     fs.readdir(dirname, function(err, filenames) {
         if (err) {
             console.log(err);
@@ -11,13 +16,12 @@ function readFiles(dirname, onFileContent, onError) {
         }
         filenames.forEach(function(filename) {
             if (filename === ".DS_Store") {
-              return;
+                return;
             }
             let content = fs.readFileSync(dirname + filename, 'utf-8')
             exportJson.push(content);
         });
         let data = JSON.stringify(exportJson);
-        fs.writeFileSync('views/html.json', data);
+        fs.writeFileSync('views/' + folder + '.json', data);
     });
 }
-

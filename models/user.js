@@ -14,7 +14,9 @@ var userSchema = new Schema({
     level: {type: Number, default: 0},
     prevLevel: {type: Number, default: 0},
     boardingRoom: String,
-    playbackTime: Number
+    playbackTime: Number,
+    playbackTime2: Number,
+    videoId: String
 });
 
 //Export function to create "SomeModel" model class

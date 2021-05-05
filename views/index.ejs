@@ -11,20 +11,67 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
 </head>
 
-<body>
+<body style="background-image: url('images/DSC_6671.JPG')">
     <div id="page" class="container">
-        <h1>
-            Besser Sterben - eine Kaffeefahrt mit dem Tod
-        </h1>
-        <div id="message">
+        <div class="d-flex justify-content-end">
+            <h1 class="text-success pr-5">
+                Besser Sterben
+            </h1>
+        </div>
+        <div class="d-flex justify-content-start mt-5 mb-5">
+            <h2 class="bg-dark text-white pl-5 pr-3 py-2">
+                eine Kaffeefahrt mit dem Tod
+            </h2>
+        </div>
+        <div id="content" class="container bg-white px-5 py-4 mb-5">
+            <div id="message">
+                <p>
+                    Willkommen zur heutigen Vorstellung. Schön, dass Sie da sind.
+                </p>
+                <p>
+                    Wir werden gleich beginnen. Haben Sie alles bereit? Sie benötigen das Magazin, ihr Ticket, den großen QR-Code und den Edding.<br>
+                    Wenn Sie bereit sind, klicken sie auf <i>Start</i>.
+                </p>
+                <button id="start-show" type="button" class="btn btn-primary">Start</button>
+            </div>
+        </div>
+    </div>
+    <button id="help-toggle" type="button" class="btn btn-success btn-circle">
+        <h3 class="mb-0">?</h3>
+    </button>
+    <div id="help" class="bg-dark text-white p-3">
+        <div class="d-flex justify-content-end">
+            <div id="help-close">
+                <svg width="100%" height="100%" viewBox="0 0 625 192" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+                    <g transform="matrix(4.16667,0,0,4.16667,-300.997,-200.56)">
+                        <g transform="matrix(-1,-1.22465e-16,1.22465e-16,-1,322.98,142.269)">
+                            <path d="M246.962,71.135L192.031,51.145C192.031,51.145 212.081,71.135 192.031,91.124L246.962,71.135Z" style="fill:white;fill-rule:nonzero;" />
+                        </g>
+                        <g transform="matrix(0.268287,0,0,0.268287,-68.6216,-13.74)">
+                            <circle cx="1049.53" cy="316.357" r="20.524" style="fill:white;" />
+                        </g>
+                        <g transform="matrix(0.268287,0,0,0.268287,-102.585,-13.7405)">
+                            <circle cx="1049.53" cy="316.357" r="20.524" style="fill:white;" />
+                        </g>
+                        <g transform="matrix(0.268287,0,0,0.268287,-136.646,-13.74)">
+                            <circle cx="1049.53" cy="316.357" r="20.524" style="fill:white;" />
+                        </g>
+                    </g>
+                </svg>
+            </div>
+        </div>
+        <h3 class="pt-2">Hilfestellungen</h3>
+        <div id="help-content">
             <p>
-                Willkommen zur heutigen Vorstellung. Schön, dass Sie da sind.
+                Sie befinden sich auf der Startseite der Vorstellung.
             </p>
             <p>
-                Wir werden gleich beginnen. Haben Sie alles bereit? Sie benötigen das Magazin, ihr Ticket, den großen QR-Code und den Edding.<br>
-                Wenn Sie bereit sind, klicken sie auf <i>Start</i>. Anschließend wird sich diese Seit ein den Vollbildmodus begeben.
+                Sie müssen hier nichts weiter tun, als auf den türkisen Knopf zu drücken, der mit Start beschriftet ist.
             </p>
-            <button id="start-show" type="button" class="btn btn-primary">Start</button>
+        </div>
+        <hr class="border-white">
+        <div id="help-contact">
+            <p>Sollten Sie einmal nicht weiterkommen, können sie sich auch Hilfe unter der folgenden Telefonnummer holen:<br><br>01522 7567431</p>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>

@@ -4,9 +4,16 @@
  
 $font-family-sans-serif: neue-haas-grotesk-display, sans-serif !default;
 $headings-font-family: xants, sans-serif !default;
+$h2-font-family: neue-haas-grotesk-display, sans-serif !default;;
 
-$green: #6caf2a;
-$primary: $green;
- 
+$green: #66B441;
+$gray-800: #231F20;
+$primary: #15AFC6;
+
+$font-size-base: 1.2rem;
+$h1-font-size:	$font-size-base * 6 !important;
+$h2-font-size:	$font-size-base * 1.5 !important;
+
 // Required
 @import "../../node_modules/bootstrap/scss/bootstrap";
+
