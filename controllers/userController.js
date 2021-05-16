@@ -1,4 +1,5 @@
 const users = require('../models/user');
+const rooms = require('../models/room');
 const ejs = require('ejs');
 
 const bbb = require('bigbluebutton-js');
@@ -22,7 +23,7 @@ exports.board = function(req, res) {
                 } else {
                     user.sessionStart = Date.now();
                     user.lastRequest = Date.now();
-                    user.level = 1;
+                    user.level = user.level === 0 ? 1 : user.level;
                     res
                         .cookie('user', user._id, { maxAge: 2 * 60 * 60 * 1000, httpOnly: true, SameSite: "strict" })
                         .json({ status: "go", level: user.level, html: html[1], help: help[1] });
@@ -43,8 +44,8 @@ exports.board = function(req, res) {
             if (req.query.reload && user.level === 2) {
                 user.level = 1;
             }
-            if (req.query.playback ) {
-                if(user.level < 5){
+            if (req.query.playback) {
+                if (user.level < 5) {
                     user.level = 5;
                 } else {
                     user.level = 7;
@@ -89,30 +90,25 @@ exports.board = function(req, res) {
 // ******* 1 boarding queue ******* //
 function boarding_queue(req, res, user) {
     if (req.query.reload) {
-        res.json({ status: "go", level: user.level, html: html[1] });
+        res.json({ status: "go", level: user.level, html: html[user.level], help: help[user.level] });
     } else {
         users.find({ sessionStart: { $lt: user.sessionStart }, level: 1, active: true }, function(err, queue) {
             if (queue.length === 0) {
-                const api = bbb.api(
-                    process.env.HOST,
-                    process.env.SECRET,
-                );
-                const meetingsUrl = api.monitoring.getMeetings();
-
-                http(meetingsUrl).then((result) => {
-                    let sendMeeting = false;
-                    for (let i = 0; i < result.meetings.length; i++) {
-                        room = result.meetings[i];
-                        if (room.participantCount === 1 && room.isBreakout === true) {
-                            const attendeeUrl = api.administration.join(req.cookies.user, room.meetingID, room.attendeePW);
-                            sendMeeting = true;
-                            user.level = 2;
-                            res.json({ status: "go", level: user.level, url: attendeeUrl, html: html[user.level] });
-                            user.boardingRoom = room.meetingName;
-                            user.save();
-                        }
-                    }
-                    if (!sendMeeting) {
+                rooms.findOne({ occupied: false }, (err, room) => {
+                    if (room) {
+                        room.occupied = true;
+                        room.save();
+                        const api = bbb.api(
+                            process.env.HOST,
+                            process.env.SECRET,
+                        );
+                        const attendeeUrl = api.administration.join(user.name, room.meetingID, room.attendeePW);
+                        user.level = 2;
+                        res.json({ status: "go", level: user.level, url: attendeeUrl, html: html[user.level], help: help[user.level] });
+                        user.boardingRoom = room.meetingName;
+                        user.boardingRoomId = room.meetingID;
+                        user.save();
+                    } else {
                         res.json({ status: "wait", level: user.level, queue: queue.length });
                     }
                 });
@@ -138,7 +134,7 @@ function wait_before_bus(req, res, user) {
         users.countDocuments({ level: 3 }, (err, count) => {
             let boardingCount = count;
             if (levelChange(user) || req.query.reload) {
-                res.json({ status: "go", level: user.level, html: html[user.level], users: userCount, boarded: boardingCount });
+                res.json({ status: "go", level: user.level, html: html[user.level], users: userCount, boarded: boardingCount, help: help[user.level] });
             } else {
                 res.json({ status: "wait", level: user.level, users: userCount, boarded: boardingCount });
             }
@@ -150,9 +146,12 @@ function wait_before_bus(req, res, user) {
 
 // ******* 4 Bus Journey ******* //
 function bus_journey(req, res, user) {
-    if (levelChange(user) || req.query.reload) {
+    let change = levelChange(user);
+    if (change || req.query.reload) {
+        let reload = req.query.reload && !change ? true : false;
+        console.log(reload);
         let playbackTime = user.playbackTime ? user.playbackTime : 0;
-        res.json({ status: "go", level: user.level, html: html[user.level], playbackTime: playbackTime })
+        res.json({ status: "go", level: user.level, html: html[user.level], playbackTime: playbackTime, help: help[user.level], reload: reload });
     } else {
         user.playbackTime = req.query.playbackTime;
         user.save();
@@ -163,7 +162,7 @@ function bus_journey(req, res, user) {
 // ******* 5 questionnaire ******* //
 function scan_questionnaire(req, res, user) {
     if (levelChange(user) || req.query.reload) {
-        res.json({ status: "go", level: user.level, html: html[user.level] })
+        res.json({ status: "go", level: user.level, html: html[user.level], help: help[user.level] });
     } else {
 
     }
@@ -171,16 +170,21 @@ function scan_questionnaire(req, res, user) {
 
 // ******* 6 cemetry ******* //
 function cemetry(req, res, user) {
-    if (levelChange(user) || req.query.reload) {
-        user.videoId = req.query.videoId ? req.query.videoId : user.videoId;
+    if (req.query.videoId) {
+        user.videoId = req.query.videoId;
+        user.prevLevel = user.level;
         user.save();
         let reload = req.query.reload ? true : false;
-        res.json({ status: "go", level: user.level, html: html[user.level], videoId: user.videoId, reload: reload })
+        res.json({ status: "go", level: user.level, html: html[user.level], videoId: user.videoId, name: user.name, help: help[user.level] });
+
+    } else if (req.query.reload) {
+        let reload = req.query.reload ? true : false;
+        res.json({ status: "go", level: user.level, html: html[user.level], videoId: user.videoId, reload: reload, name: user.name, help: help[user.level] });
     } else {
         user.playbackTime = req.query.playbackTime;
         user.playbackTime2 = req.query.playbackTime2;
+        res.json({ status: "wait", level: user.level });
         user.save();
-        res.json({ status: "wait", level: user.level })
     }
 }
 
@@ -192,22 +196,23 @@ function after_talk(req, res, user) {
         process.env.HOST,
         process.env.SECRET
     );
-    const attendeeUrl = api.administration.join(req.cookies.user, meetingID, attendeePW);
+    const attendeeUrl = api.administration.join(user.name, meetingID, attendeePW);
     let html = "";
     console.log(attendeeUrl);
-    ejs.renderFile('views/7_after_talk.ejs', {attendeeUrl: attendeeUrl}, function(err, str){
+    ejs.renderFile('views/7_after_talk.ejs', { attendeeUrl: attendeeUrl }, function(err, str) {
         console.log(err);
         console.log(str);
         html = str;
     });
-    res.json({ status: "go", level: user.level, url: attendeeUrl, html: html });
+    res.json({ status: "go", level: user.level, url: attendeeUrl, html: html, help: help[user.level] });
 }
 
 function levelChange(user) {
     if (user.level != user.prevLevel) {
         user.prevLevel = user.level;
-        user.save();
-        return true;
+        user.save(() => {
+            return true;
+        })
     } else {
         return false;
     }
@@ -222,8 +227,14 @@ exports.getUsersBoarding = function(req, res) {
 }
 
 exports.sendUser2MainRoom = function(req, res) {
-    users.findByIdAndUpdate(req.query.id, { level: 3 }, () => {
-        res.status(200);
+    users.findById(req.query.id, (err, user) => {
+        user.level = 3;
+        user.save();
+        rooms.findOne({ meetingID: user.boardingRoomId }, (err, room) => {
+            room.occupied = false;
+            room.save();
+            res.json({ status: "go" });
+        });
     });
 }
 

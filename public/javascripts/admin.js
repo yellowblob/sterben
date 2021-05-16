@@ -1,4 +1,5 @@
 jQuery(document).ready(function($) {
+
     const interval = setInterval(function() {
         $.get("/admin/refresh", function(data, status) {
             $("#activeBoardings").html("");
@@ -10,7 +11,14 @@ jQuery(document).ready(function($) {
                 newhtml += "</div";
                 $("#activeBoardings").append(newhtml);
                 $('#' + data[i]._id).click(function() {
-                    send2main(this.id);
+                    $.get("/admin/setmain", { id: this.id }, function(data, status) {
+                        if (data.status === "go") {
+                            $('#' + data[i]._id).removeClass("btn-primary").addClass("btn-success");
+                            setTimeout(function() {
+                                $('#' + data[i]._id).removeClass("btn-success").addClass("btn-primary");
+                            }, 5000);
+                        }
+                    });
                 });
             }
         });
@@ -28,7 +36,29 @@ jQuery(document).ready(function($) {
         });
     });
 
+    $("#reload-rooms").click(() => {
+        $.get("/admin/reloadRooms", function(data, status) {
+            if (data.status === "go") {
+                $("#reload-rooms").removeClass("btn-primary").addClass("btn-success");
+                setTimeout(function() {
+                    $("#reload-rooms").removeClass("btn-success").addClass("btn-primary");
+                }, 5000);
+            }
+        });
+    });
+
+    $("#open-rooms").click(() => {
+        $.get("/admin/openRooms", function(data, status) {
+            if (data.status === "go") {
+                $("#open-rooms").removeClass("btn-primary").addClass("btn-success");
+                setTimeout(function() {
+                    $("#open-rooms").removeClass("btn-success").addClass("btn-primary");
+                }, 5000);
+            }
+        });
+    });
+
     function send2main(id) {
-        $.get("/admin/setmain", { id: id });
+
     }
 });

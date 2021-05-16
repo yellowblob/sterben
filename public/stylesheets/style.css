@@ -57,7 +57,11 @@ h2 {
 }
 
 .frame-1 {
-    height: 80vh;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: none;
 }
 
 .frame-2 {
@@ -80,4 +84,13 @@ h2 {
 #vimeo-wrapper-wrapper,
 #vimeo-wrapper-wrapper-2 {
     display: none;
+}
+
+#hide-pip {
+    height: 100vh !important;
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display:none;
 }

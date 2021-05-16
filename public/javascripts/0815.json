@@ -1,0 +1,18 @@
+[
+{
+    "question": "Wissen Sie schon, welche Art von Bestattung, Sie sich wünschen? Sarg, Urne oder Körperspende?",
+    "answer":
+    {
+        "price": 0​​​ "short": "1c"​​​
+        "sortingIndex": 2​​​ "text": "Ausstellung „Körperwelten“"
+    }
+},
+{
+    "question": "Welche Musik soll an Ihrer Beerdigung gespielt werden?",
+    "answer":
+    {
+        "id": "132689716"​​​
+        "price": 10​​​ "short": "11a"​​​
+        "sortingIndex": 46​​​ "text": "J.S. Bach - Chaconne"
+    }
+}, ]

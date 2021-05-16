@@ -6,16 +6,16 @@ const questions = [
     "Wie wollen Sie angekleidet und gewaschen werden?",
     "Welche Kleidung soll Ihre letzte sein?",
     "Wünschen Sie eine Aufbahrung?",
-    "Welcher Sarg? oder Welche Urne?",
+    "Welcher Sarg? Oder welche Urne?",
+    "Wer soll das letzte Wort haben?",
     "Wollen Sie eine Traueranzeige veröffentlichen?",
-    "Wenn ja",
-    "Grösse: (cm)",
-    "Trauerredner:in oder Pfarrer:in - katholisch oder evangelisch? muslimisch? jüdisch?",
+    "Wenn ja, in welcher Zeitung?",
+    "Wie groß (in cm)?",
     "Wie wird die Musik dargeboten?",
     "Welche Musik soll an Ihrer Beerdigung gespielt werden?",
-    "Leichenschmaus. Welche Geschmacksrichtung?",
+    "Was gibt es zum Leichenschmaus?",
     "Wie viele Gäste?",
-    "Grabpflege",
+    "Wer kümmert sich um dei Grabpflege?",
     "Sterben Sie zu Hause oder im Krankenhaus?",
     "In welcher Jahreszeit sterben Sie?"
 ]
@@ -38,47 +38,47 @@ const answers = [
         }
     ],
     [{
-            "short": "1.1a",
+            "short": "1d",
             "text": "Friedhof",
             "price": 300,
         },
         {
-            "short": "1.1b",
+            "short": "1e",
             "text": "Friedwald",
             "price": 500,
         },
         {
-            "short": "1.1c",
+            "short": "1f",
             "text": "Seebestattung",
             "price": 1000,
         },
         {
-            "short": "1.1d",
+            "short": "1g",
             "text": "Almwiesenbestattung (Schweiz)",
             "price": 1000,
         },
         {
-            "short": "1.1e",
+            "short": "1h",
             "text": "Diamantbestattung",
             "price": 3000,
         },
         {
-            "short": "1.1f",
+            "short": "1i",
             "text": "Streuwiesenbestattung",
             "price": 1500,
         },
         {
-            "short": "1.1g",
+            "short": "1j",
             "text": "Flussbestattung (Holland)",
             "price": 2000,
         },
         {
-            "short": "1.1h",
-            "text": "Luftbestattung (mit Heißluftballon) (Elsaß)",
+            "short": "1k",
+            "text": "Luftbestattung (aus dem Heißluftballon) (Elsaß)",
             "price": 750,
         },
         {
-            "short": "1.1i",
+            "short": "1l",
             "text": "Anonyme Bestattung",
             "price": 30,
         }
@@ -101,12 +101,12 @@ const answers = [
     ],
     [{
             "short": "3a",
-            "text": "etwas eigenes",
+            "text": "Etwas eigenes",
             "price": 300,
         },
         {
             "short": "3b",
-            "text": "Das letzte Hemd (kaufen)",
+            "text": "Das letzte Hemd",
             "price": 450,
         }
     ],
@@ -123,12 +123,12 @@ const answers = [
     ],
     [{
             "short": "5a",
-            "text": "Mahagonisarg",
+            "text": "Mahagoni",
             "price": 3000,
         },
         {
             "short": "5b",
-            "text": "Wildeichesarg",
+            "text": "Wildeiche",
             "price": 4000,
         },
         {
@@ -158,89 +158,89 @@ const answers = [
         },
         {
             "short": "5h",
-            "text": "Häkelurne à la Mielich",
+            "text": "Filz- oder Häkelurne à la Mielich",
             "price": 400,
         }
     ],
     [{
             "short": "6a",
+            "text": "Trauerredner:in",
+            "price": 300,
+        },
+        {
+            "short": "6b",
+            "text": "Pfarrer:in (evangelisch)",
+            "price": 0,
+        },
+        {
+            "short": "6c",
+            "text": "Pfarrer (katholisch)",
+            "price": 0,
+        },
+        {
+            "short": "6d",
+            "text": "Imam",
+            "price": 0,
+        },
+        {
+            "short": "6e",
+            "text": "Rabbi",
+            "price": 0,
+        },
+        {
+            "short": "6f",
+            "text": "Sie überreden jemanden aus Ihrem Zugehörigenkreis, die Rede zu halten",
+            "price": 0,
+        }
+    ],
+    [{
+            "short": "7a",
             "text": "Ja",
             "price": 700,
         },
         {
-            "short": "6b",
+            "short": "7b",
             "text": "Nein",
             "price": 950,
         }
     ],
     [{
-            "short": "7a",
+            "short": "8a",
             "text": "ZEIT",
             "price": 100,
         },
         {
-            "short": "7b",
+            "short": "8b",
             "text": "Süddeutsche Zeitung",
             "price": 150,
         },
         {
-            "short": "7c",
+            "short": "8c",
             "text": "Frankfurter Allgemeine Zeitung",
             "price": 200,
         },
         {
-            "short": "7d",
+            "short": "8d",
             "text": "Regionale Zeitung",
             "price": 50,
         }
     ],
     [{
-            "short": "8a",
-            "text": "28 x 21 cm",
+            "short": "9a",
+            "text": "28 x 21",
             "price": 56,
         },
         {
-            "short": "8b",
-            "text": "14 x 15 cm",
+            "short": "9b",
+            "text": "14 x 15",
             "price": 28,
         },
         {
-            "short": "8c",
-            "text": "4,5 x 5 cm",
+            "short": "9c",
+            "text": "4,5 x 5",
             "price": 59,
         }
-    ],
-    [{
-            "short": "9a",
-            "text": "Trauerredner:in",
-            "price": 300,
-        },
-        {
-            "short": "9b",
-            "text": "Pfarrer:in (evangelisch)",
-            "price": 0,
-        },
-        {
-            "short": "9c",
-            "text": "Pfarrer (katholisch)",
-            "price": 0,
-        },
-        {
-            "short": "9d",
-            "text": "Imam",
-            "price": 0,
-        },
-        {
-            "short": "9e",
-            "text": "Rabbi",
-            "price": 0,
-        },
-        {
-            "short": "9f",
-            "text": "Sie zwingen jemanden aus der Familie, die Zeremonie zu gestalten",
-            "price": 0,
-        }
-    ],
+    ], 
     [{
             "short": "10a",
             "text": "Mit Bluetooth-Box",
@@ -307,11 +307,6 @@ const answers = [
             "short": "12c",
             "text": "Sterneküche",
             "price": 1000,
-        },
-        {
-            "short": "12d",
-            "text": "Foodtruck",
-            "price": 500,
         }
     ],
     [{
@@ -337,7 +332,7 @@ const answers = [
     ],
     [{
             "short": "14a",
-            "text": "Professionell",
+            "text": "Professionelle Gärtnerei",
             "price": 1000,
         },
         {
@@ -347,7 +342,7 @@ const answers = [
         },
         {
             "short": "14c",
-            "text": "keine",
+            "text": "Keine:r",
             "price": 0,
         }
     ],
@@ -386,77 +381,78 @@ const answers = [
 ]
 
 const answerMap = {
-    "0_0": [0, 0],
-    "0_2": [0, 1],
-    "0_5": [0, 2],
-    "0_6": [1, 0],
-    "1_0": [1, 1],
-    "1_2": [1, 2],
-    "1_3": [1, 3],
-    "1_4": [1, 4],
-    "2_1": [1, 5],
-    "2_3": [1, 6],
-    "2_4": [1, 7],
-    "2_5": [1, 8],
-    "2_6": [2, 0],
-    "2_7": [2, 1],
-    "3_0": [2, 2],
-    "3_2": [3, 0],
-    "3_3": [3, 1],
-    "3_7": [4, 0],
-    "4_0": [4, 1],
-    "4_2": [5, 0],
-    "4_3": [5, 1],
-    "4_4": [5, 2],
-    "9_6": [5, 3],
-    "9_7": [5, 4],
-    "9_4": [5, 5],
-    "9_3": [5, 6],
-    "9_1": [5, 7],
-    "8_4": [6, 0],
-    "8_5": [6, 1],
-    "8_2": [7, 0],
-    "8_0": [7, 1],
-    "8_1": [7, 2],
-    "7_3": [7, 3],
-    "7_1": [8, 0],
-    "6_6": [8, 1],
-    "6_4": [8, 2],
-    "6_2": [9, 0],
-    "6_3": [9, 1],
-    "5_7": [9, 2],
-    "5_4": [9, 3],
-    "5_2": [9, 4],
-    "5_3": [9, 5],
-    "10_0": [10, 0],
-    "10_2": [10, 1],
-    "10_4": [10, 2],
-    "11_1": [10, 3],
-    "11_2": [11, 0],
-    "11_4": [11, 1],
-    "12_2": [11, 2],
-    "12_4": [11, 3],
-    "12_5": [11, 4],
-    "12_6": [12, 0],
-    "13_2": [12, 1],
-    "13_3": [12, 2],
-    "13_5": [12, 3],
-    "17_2": [13, 0],
-    "17_0": [13, 1],
-    "16_6": [13, 2],
-    "16_4": [13, 3],
-    "16_2": [14, 0],
-    "16_1": [14, 1],
-    "15_7": [14, 2],
-    "15_0": [15, 0],
-    "14_7": [15, 1],
-    "14_4": [16, 0],
-    "14_2": [16, 1],
-    "14_3": [16, 2],
-    "14_0": [16, 3]
+    "21_6": [0, 0],
+    "21_5": [0, 1],
+    "13_6": [0, 2],
+    "13_5": [1, 0],
+    "21_4": [1, 1],
+    "21_3": [1, 2],
+    "14_1": [1, 3],
+    "14_0": [1, 4],
+    "13_3": [1, 5],
+    "21_1": [1, 6],
+    "14_3": [1, 7],
+    "14_2": [1, 8],
+    "5_3": [2, 0],
+    "5_2": [2, 1],
+    "5_4": [2, 2],
+    "4_2": [3, 0],
+    "4_0": [3, 1],
+    "20_5": [4, 0],
+    "14_7": [4, 1],
+    "12_5": [5, 0],
+    "12_4": [5, 1],
+    "12_2": [5, 2],
+    "6_3": [5, 3],
+    "6_2": [5, 4],
+    "6_4": [5, 5],
+    "3_3": [5, 6],
+    "3_2": [5, 7],
+    "2_7": [6, 0],
+    "2_6": [6, 1],
+    "2_5": [6, 2],
+    "2_4": [6, 3],
+    "2_3": [6, 4],
+    "2_1": [6, 5],
+    "20_2": [7, 0],
+    "20_0": [7, 1],
+    "15_7": [8, 0],
+    "19_3": [8, 1],
+    "16_1": [8, 2],
+    "19_1": [8, 3],
+    "11_4": [9, 0],
+    "7_1": [9, 1],
+    "11_2": [9, 2],
+    "29_3": [10, 0],
+    "18_5": [10, 1],
+    "29_5": [10, 2],
+    "18_4": [10, 3],
+    "8_1": [11, 0],
+    "8_0": [11, 1],
+    "8_2": [11, 2],
+    "8_5": [11, 3],
+    "8_4": [11, 4],
+    "9_1": [12, 0],
+    "10_4": [12, 1],
+    "9_3": [12, 2],
+    "16_4": [13, 0],
+    "16_6": [13, 1],
+    "17_0": [13, 2],
+    "17_2": [13, 3],
+    "10_0": [14, 0],
+    "9_7": [14, 1],
+    "9_6": [14, 2],
+    "0_2": [15, 0],
+    "0_0": [15, 1],
+    "1_4": [16, 0],
+    "1_2": [16, 1],
+    "1_0": [16, 2],
+    "0_6": [16, 3]
 }
 
 let sorter = 0;
+const maxMappingErrors = 5;
+
 answers.forEach((question) => {
     question.forEach((answer) => {
         answer.sortingIndex = sorter;
@@ -473,9 +469,10 @@ function getFlippedBits(originalCodewords, scannedCodewords) {
 }
 
 function getAnswers(scannedCodewords) {
+    let mappingErrors = 0;
     let answerWords = getFlippedBits(originalCodewords, scannedCodewords);
     let choices = [];
-    for (let i = 0; i < 18; i++) {
+    for (let i = 0; i < 30; i++) {
         const b = byte2bits(answerWords[i]);
         for (let j = 0; j < b.length; j++) {
             if (b[j] === "1") {
@@ -491,13 +488,16 @@ function getAnswers(scannedCodewords) {
                     choices.push(answer);
                 } catch (e) {
                     console.log("Error on " + address + " ,answerWords: " + byte2bits(answerWords[i]) + " ,scanned: " + byte2bits(scannedCodewords[i]) + " ,original: " + byte2bits(originalCodewords[i]));
-                    return null;
+                    mappingErrors++;
                 }
 
             }
         }
     }
-    if (choices.length < 14) {
+    if (mappingErrors > maxMappingErrors){
+        return null;
+    }
+    if (choices.length < 5) {
         return null;
     }
     choices.sort((a, b) => (a.answer.sortingIndex > b.answer.sortingIndex) ? 1 : -1);

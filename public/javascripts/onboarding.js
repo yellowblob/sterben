@@ -4,6 +4,27 @@ QrScanner.WORKER_PATH = '../javascripts/worker.js';
 
 const standartTimeout = 5000;
 
+const answers0815 = [{
+        "question": "Wissen Sie schon, welche Art von Bestattung, Sie sich wünschen? Sarg, Urne oder Körperspende?",
+        "answer": {
+            "price": 0,
+            "short": "1c",
+            "sortingIndex": 2,
+            "text": "Ausstellung „Körperwelten“"
+        }
+    },
+    {
+        "question": "Welche Musik soll an Ihrer Beerdigung gespielt werden?",
+        "answer": {
+            "id": "132689716",
+            "price": 10,
+            "short": "11a",
+            "sortingIndex": 46,
+            "text": "J.S. Bach - Chaconne"
+        }
+    },
+];
+
 let scanner;
 let interval;
 let timer;
@@ -12,6 +33,7 @@ let player2
 let answers;
 let button2;
 let insideWidth;
+let name;
 
 jQuery(document).ready(function($) {
 
@@ -97,20 +119,14 @@ jQuery(document).ready(function($) {
             alert("Leider konnten wir Ihre ID keinem für die heutige Vorstellung registrierten Ticket zuordnen.");
         } else {
             $("#content").html(data.html);
+            updateHelp(data.help)
 
-            if ($("#help").css("left") === "0px") {
-                $("#help").animate({ left: "-20vw" });
-                $("body").animate({ "padding-left": "0" }, () => {
-                    $("#help-content").html(data.help);
-                })
-            } else {
-                $("#help-content").html(data.help);
-            }
             const video = document.getElementById('qr-video');
 
             $("#check-in").submit(function(event) {
                 event.preventDefault();
-                let ticketId = $("#ticket-id").val().toLowerCase();
+                let ticketId = $("#ticket-id").val();
+                //ticketId = ticketId.toLowerCase();
                 ask4Task({ ticketId: ticketId });
             });
 
@@ -169,7 +185,9 @@ jQuery(document).ready(function($) {
             if (scanner) {
                 scanner.stop();
             }
-            $("#page").html(data.html);
+            $("#content").html(data.html);
+            updateHelp(data.help);
+            $("#content").fadeIn();
         } else {
             if (data.queue === 0) {
                 $("#queue").text("Sie werden gleich in den nächsten freien Raum weitergeleitet.");
@@ -186,9 +204,11 @@ jQuery(document).ready(function($) {
     function display_boarding_room(data) {
 
         if (data.status === "go") {
+            updateHelp(data.help);
             console.log(data.url);
-            $("#page").html(data.html);
+            $("#page").after(data.html);
             $("#bbb-frame iframe").attr("src", data.url);
+            $("#bbb-frame").fadeIn();
         }
         clearTimeout(timer);
         timer = setTimeout(function() {
@@ -198,9 +218,12 @@ jQuery(document).ready(function($) {
 
     function display_outside_bus(data) {
         if (data.status === "go") {
-            $("#page").html(data.html);
-            let imageUrl = 'images/bus.jpg'
-            $("body").css('background-image', 'url(' + imageUrl + ')');
+            updateHelp(data.help)
+            $("#content").html(data.html);
+            $('#bbb-frame').fadeOut(() => {
+                $('#bbb-frame').remove();
+            });
+            $("#content").fadeIn();
         }
         $("#guests").text(data.boarded + " / " + data.users);
         clearTimeout(timer);
@@ -211,10 +234,11 @@ jQuery(document).ready(function($) {
 
     function display_bus_journey(data) {
         if (data.status === "go") {
+            updateHelp(data.help);
             $("#page").after(data.html);
 
             const options = {
-                url: "https://vimeo.com/544568910/1f79c6486b",
+                id: 349653087,
                 controls: false,
                 width: document.body.clientWidth,
                 pip: false,
@@ -227,21 +251,42 @@ jQuery(document).ready(function($) {
 
             let button = $("#board");
 
+            if (data.reload === true) {
+                player.setCurrentTime(data.playbackTime);
+            } else {
+                data.playbackTime = 0;
+            }
 
 
-            player.on('timeupdate', function(data) {
-                if (data.seconds >= 1.0) {
+            player.on('timeupdate', function(time) {
+                if (time.seconds >= 1.0 + data.playbackTime) {
                     player.pause();
-                    button.attr("style", "display: inline !important");
-                    button.click(() => {
-                        console.log("clicked");
-                        player.setMuted(false);
-                        $("#vimeo-wrapper-wrapper").fadeIn(1500);
-                        player.play();
-                    });
-
                     player.off('timeupdate');
+                    button.attr("style", "display: inline !important");
+
+                    if (data.reload === true) {
+                        openFullscreen();
+                        player.setCurrentTime(data.playbackTime);
+                        player.setMuted(false);
+                        $("#vimeo-wrapper-wrapper").fadeIn(1500, () => {
+                            $("#hide-pip").show();
+                        });
+                        player.play();
+
+                    } else {
+
+                        button.click(() => {
+                            openFullscreen();
+                            console.log("clicked");
+                            player.setMuted(false);
+                            $("#vimeo-wrapper-wrapper").fadeIn(1500, () => {
+                                $("#hide-pip").show();
+                            });
+                            player.play();
+                        });
+                    }
                 }
+
             });
 
             player.play();
@@ -259,8 +304,18 @@ jQuery(document).ready(function($) {
     }
 
     function display_questionnaire(data) {
-        $("#page").html(data.html);
-        $("#vimeo-wrapper-wrapper").remove();
+        updateHelp(data.help);
+        $("#content").html(data.html);
+        $("#vimeo-wrapper-wrapper").fadeOut().remove();
+        $("#hide-pip").hide();
+        $("#null815").click(() => {
+
+            console.log(answers0815);
+            showResults(answers0815);
+            
+
+
+        });
 
         const video = document.getElementById('qr-video');
 
@@ -274,36 +329,65 @@ jQuery(document).ready(function($) {
             } else {
                 answers = getAnswers(result.codewords);
                 if (answers !== null) {
-
-                    $('#qr-scanner').hide();
-                    $('#message').html("Vielen Dank für Ihre Anfrage. Sie erhalten folgendes Angebot:");
-                    let newHtml = "";
-                    let answersMinified = "";
-                    let videoId = "";
-                    answers.forEach((answer, index) => {
-                        newHtml += "<h4>" + answer.question + "</h4>";
-                        newHtml += "<p>" + answer.answer.text + "</p>";
-                        answersMinified += answer.answer.short + " ";
-                        if (answer.answer.short.includes("11")) {
-                            videoId = answer.answer.id;
-                        }
-                    });
-                    newHtml += '<button id="correct" type="button" class="btn btn-success">weiter</button>';
-                    $("#responseMessage").html(newHtml);
-                    console.log(answersMinified);
-                    scanner.stop();
-                    ask4Task({ videoId: videoId });
+                    console.log(answers);
+                    showResults(answers);
                 }
             }
         });
         scanner.start();
+        let videoWidth, videoHeight;
+        let getVideoSize = function() {
+            const videoWidth = insideWidth;
+            console.log(video.offsetWidth);
+            const lineCanvas = document.getElementById('line-canvas');
+            const lineContext = lineCanvas.getContext("2d");
+            const videoPseudo = { "videoWidth": videoWidth, "videoHeight": video.videoHeight * videoWidth / video.videoWidth }
+            lineCanvas.width = videoWidth;
+            lineCanvas.height = videoPseudo.videoHeight;
+            const liveScanRegion = calculateScanRegion(videoPseudo);
+            drawLine(lineContext, liveScanRegion.x, liveScanRegion.y, liveScanRegion.x + liveScanRegion.width, liveScanRegion.y);
+            drawLine(lineContext, liveScanRegion.x, liveScanRegion.y + liveScanRegion.width, liveScanRegion.x + liveScanRegion.width, liveScanRegion.y + liveScanRegion.width);
+            drawLine(lineContext, liveScanRegion.x, liveScanRegion.y, liveScanRegion.x, liveScanRegion.y + liveScanRegion.height);
+            drawLine(lineContext, liveScanRegion.x + liveScanRegion.width, liveScanRegion.y, liveScanRegion.x + liveScanRegion.width, liveScanRegion.y + liveScanRegion.height);
+
+            $("#content").fadeIn();
+            $("html, body").animate({ scrollTop: $(document).height() - $(window).height() });
+            video.removeEventListener('playing', getVideoSize, false);
+        };
+
+        video.addEventListener('playing', getVideoSize, false);
+
+    }
+
+    function showResults(answers) {
+        $("#null815").remove();
+        $('#qr-scanner').hide();
+        $('#message').html("Vielen Dank für Ihre Anfrage. Sie erhalten folgendes Angebot. Bitte scrollen Sie ganz nach unten, um weiter zu kommen.");
+        let newHtml = "";
+        let answersMinified = "";
+        let videoId = "";
+        answers.forEach((answer, index) => {
+            newHtml += "<h6>" + answer.question + "</h6>";
+            newHtml += "<p>" + answer.answer.text + "</p>";
+            answersMinified += answer.answer.short + " ";
+            if (answer.answer.short.includes("11")) {
+                videoId = answer.answer.id;
+            }
+        });
+        newHtml += '<button id="correct" type="button" class="btn btn-success">weiter</button>';
+        $("#responseMessage").html(newHtml);
+        console.log(answersMinified);
+        scanner.stop();
+        ask4Task({ videoId: videoId });
     }
 
     function display_cemetry(data) {
         if (data.status === "go") {
+            openFullscreen();
+            updateHelp(data.help)
             let videoId = data.videoId;
             console.log(videoId);
-            $("body").append(data.html);
+            $("#page").after(data.html);
             const options = {
                 id: 435993761,
                 controls: false,
@@ -312,6 +396,8 @@ jQuery(document).ready(function($) {
                 autopause: false,
                 muted: true,
             };
+
+            name = data.name;
 
             const options2 = {
                 id: videoId,
@@ -324,12 +410,8 @@ jQuery(document).ready(function($) {
 
             player = new Vimeo.Player('myVideo', options);
 
-            player.on('timeupdate', function(data) {
-                if (data.seconds >= 1.0) {
-                    player.pause();
-                    player.off('timeupdate');
-                }
-            });
+            player.on('timeupdate', start_video2);
+            player.on('timeupdate', play_name);
 
             player.play();
 
@@ -344,9 +426,12 @@ jQuery(document).ready(function($) {
             player2.on('timeupdate', switch_video);
             if (data.reload === true) {
                 setTimeout(() => {
+                    openFullscreen();
                     player.setMuted(false);
                     player2.setMuted(false);
-                    $("#vimeo-wrapper-wrapper-2").fadeIn(1500);
+                    $("#vimeo-wrapper-wrapper-2").fadeIn(1500, () => {
+                        $("#hide-pip").show();
+                    });
                     player2.play();
                     player2.off('timeupdate', start_video);
                 }, 1500);
@@ -373,14 +458,32 @@ jQuery(document).ready(function($) {
         }
     }
 
+    const start_video2 = function(data) {
+        if (data.seconds >= 1.0) {
+            player.pause();
+            player.off('timeupdate', start_video2);
+        }
+    }
+
+    const play_name = function(time) {
+        if (time.seconds >= 15.0) {
+            var audio = new Audio('/audio/' + name + '.mp3');
+            audio.play();
+            player.off('timeupdate', play_name);
+        }
+    }
+
     const start_video = function(data) {
         if (data.seconds >= 1.0) {
             player2.pause();
             button2.click(() => {
+                openFullscreen();
                 console.log("clicked");
                 player.setMuted(false);
                 player2.setMuted(false);
-                $("#vimeo-wrapper-wrapper-2").fadeIn(1500);
+                $("#vimeo-wrapper-wrapper-2").fadeIn(1500, () => {
+                    $("#hide-pip").show();
+                });
                 player2.play();
                 player2.off('timeupdate', start_video);
             });
@@ -389,6 +492,8 @@ jQuery(document).ready(function($) {
 
     function display_after_talk(data) {
         if (data.status === "go") {
+            updateHelp(data.help)
+            $("#hide-pip").hide();
             if (player) {
                 player.destroy();
                 player2.destroy();
@@ -396,6 +501,7 @@ jQuery(document).ready(function($) {
             $("#vimeo-wrapper-wrapper").remove();
             $("#vimeo-wrapper-wrapper-2").remove();
             $("#page").remove();
+            $("body").css("background-color", "black");
             $("body").prepend(data.html);
         }
     }
@@ -410,6 +516,17 @@ jQuery(document).ready(function($) {
             width: scanRegionSize,
             height: scanRegionSize,
         };
+    }
+
+    function updateHelp(text) {
+        if ($("#help").css("left") === "0px") {
+            $("#help").animate({ left: "-20vw" });
+            $("body").animate({ "padding-left": "0" }, () => {
+                $("#help-content").html(text);
+            })
+        } else {
+            $("#help-content").html(text);
+        }
     }
 
 });
