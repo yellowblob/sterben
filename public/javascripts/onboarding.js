@@ -97,7 +97,7 @@ jQuery(document).ready(function($) {
                     display_outside_bus(data);
                     break;
                 case 4:
-                    display_bus_journey(data);
+                    display_bus_journey_youtube(data);
                     break;
                 case 5:
                     display_questionnaire(data);
@@ -180,42 +180,6 @@ jQuery(document).ready(function($) {
         context.stroke();
     }
 
-    function display_queue(data) {
-        if (data.status === "go") {
-            if (scanner) {
-                scanner.stop();
-            }
-            $("#content").html(data.html);
-            updateHelp(data.help);
-            $("#content").fadeIn();
-        } else {
-            if (data.queue === 0) {
-                $("#queue").text("Sie werden gleich in den nächsten freien Raum weitergeleitet.");
-            } else {
-                $("#queue").text("Es sind noch " + data.queue + " Personen vor Ihnen in der Schlange");
-            }
-        }
-        clearTimeout(timer);
-        timer = setTimeout(function() {
-            ask4Task();
-        }, standartTimeout);
-    }
-
-    function display_boarding_room(data) {
-
-        if (data.status === "go") {
-            updateHelp(data.help);
-            console.log(data.url);
-            $("#page").after(data.html);
-            $("#bbb-frame iframe").attr("src", data.url);
-            $("#bbb-frame").fadeIn();
-        }
-        clearTimeout(timer);
-        timer = setTimeout(function() {
-            ask4Task();
-        }, standartTimeout);
-    }
-
     function display_outside_bus(data) {
         if (data.status === "go") {
             updateHelp(data.help)
@@ -232,7 +196,7 @@ jQuery(document).ready(function($) {
         }, standartTimeout);
     }
 
-    function display_bus_journey(data) {
+    function display_bus_journey_youtube(data) {
         if (data.status === "go") {
             updateHelp(data.help);
             $("#page").after(data.html);
@@ -312,7 +276,7 @@ jQuery(document).ready(function($) {
 
             console.log(answers0815);
             showResults(answers0815);
-            
+
 
 
         });
@@ -500,9 +464,9 @@ jQuery(document).ready(function($) {
             }
             $("#vimeo-wrapper-wrapper").remove();
             $("#vimeo-wrapper-wrapper-2").remove();
-            $("#page").remove();
             $("body").css("background-color", "black");
-            $("body").prepend(data.html);
+            $("#content").html(data.html);
+            $('#content').fadeIn();
         }
     }
 
@@ -527,6 +491,113 @@ jQuery(document).ready(function($) {
         } else {
             $("#help-content").html(text);
         }
+    }
+    ///////////////  legacy ///////////////
+    function display_queue(data) {
+        if (data.status === "go") {
+            if (scanner) {
+                scanner.stop();
+            }
+            $("#content").html(data.html);
+            updateHelp(data.help);
+            $("#content").fadeIn();
+        } else {
+            if (data.queue === 0) {
+                $("#queue").text("Sie werden gleich in den nächsten freien Raum weitergeleitet.");
+            } else {
+                $("#queue").text("Es sind noch " + data.queue + " Personen vor Ihnen in der Schlange");
+            }
+        }
+        clearTimeout(timer);
+        timer = setTimeout(function() {
+            ask4Task();
+        }, standartTimeout);
+    }
+
+    function display_boarding_room(data) {
+
+        if (data.status === "go") {
+            updateHelp(data.help);
+            console.log(data.url);
+            $("#page").after(data.html);
+            $("#bbb-frame iframe").attr("src", data.url);
+            $("#bbb-frame").fadeIn();
+        }
+        clearTimeout(timer);
+        timer = setTimeout(function() {
+            ask4Task();
+        }, standartTimeout);
+    }
+
+    function display_bus_journey_vimeo(data) {
+        if (data.status === "go") {
+            updateHelp(data.help);
+            $("#page").after(data.html);
+
+            const options = {
+                id: 349653087,
+                controls: false,
+                width: document.body.clientWidth,
+                pip: false,
+                autopause: false,
+                muted: true,
+            };
+
+            player = new Vimeo.Player('myVideo', options);
+            player.play();
+
+            let button = $("#board");
+
+            if (data.reload === true) {
+                player.setCurrentTime(data.playbackTime);
+            } else {
+                data.playbackTime = 0;
+            }
+
+
+            player.on('timeupdate', function(time) {
+                if (time.seconds >= 1.0 + data.playbackTime) {
+                    player.pause();
+                    player.off('timeupdate');
+                    button.attr("style", "display: inline !important");
+
+                    if (data.reload === true) {
+                        openFullscreen();
+                        player.setCurrentTime(data.playbackTime);
+                        player.setMuted(false);
+                        $("#vimeo-wrapper-wrapper").fadeIn(1500, () => {
+                            $("#hide-pip").show();
+                        });
+                        player.play();
+
+                    } else {
+
+                        button.click(() => {
+                            openFullscreen();
+                            console.log("clicked");
+                            player.setMuted(false);
+                            $("#vimeo-wrapper-wrapper").fadeIn(1500, () => {
+                                $("#hide-pip").show();
+                            });
+                            player.play();
+                        });
+                    }
+                }
+
+            });
+
+            player.play();
+
+            player.on('ended', () => {
+                ask4Task({ playback: false });
+            });
+        }
+        clearTimeout(timer);
+        timer = setTimeout(function() {
+            player.getCurrentTime().then(function(seconds) {
+                ask4Task({ playbackTime: seconds });
+            });
+        }, standartTimeout);
     }
 
 });

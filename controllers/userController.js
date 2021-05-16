@@ -36,9 +36,9 @@ exports.board = function(req, res) {
     } else {
         users.findById(req.cookies.user, function(err, user) {
             user.lastRequest = Date.now();
-            // send user to boarding queue if cookie is present
+            // send user to wait before bus if cookie is present / user is logged in
             if (user.level === 0) {
-                user.level = 1;
+                user.level = 3;
             }
             //send user to boarding queue if reloaded while boarding
             if (req.query.reload && user.level === 2) {
@@ -190,21 +190,7 @@ function cemetry(req, res, user) {
 
 // ******* 7 after talk ******* //
 function after_talk(req, res, user) {
-    const meetingID = process.env.MEETING_ID;
-    const attendeePW = process.env.ATTENDEE_PW;
-    const api = bbb.api(
-        process.env.HOST,
-        process.env.SECRET
-    );
-    const attendeeUrl = api.administration.join(user.name, meetingID, attendeePW);
-    let html = "";
-    console.log(attendeeUrl);
-    ejs.renderFile('views/7_after_talk.ejs', { attendeeUrl: attendeeUrl }, function(err, str) {
-        console.log(err);
-        console.log(str);
-        html = str;
-    });
-    res.json({ status: "go", level: user.level, url: attendeeUrl, html: html, help: help[user.level] });
+    res.json({ status: "go", level: user.level, html: html[user.level], help: help[user.level] });
 }
 
 function levelChange(user) {
