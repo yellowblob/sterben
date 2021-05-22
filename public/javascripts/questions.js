@@ -23,118 +23,118 @@ const questions = [
 const answers = [
     [{
             "short": "1a",
-            "text": "Erdbestattung",
-            "price": 2000,
+            "text": "Erdbestattung auf dem Friedhof",
+            "price": 2300,
         },
         {
             "short": "1b",
             "text": "Feuerbestattung",
-            "price": 1000,
+            "price": 440,
         },
         {
             "short": "1c",
-            "text": "Ausstellung „Körperwelten“",
+            "text": "Spende an Ausstellung „Körperwelten“",
             "price": 0
         }
     ],
     [{
             "short": "1d",
-            "text": "Friedhof",
-            "price": 300,
+            "text": "auf dem Friedhof",
+            "price": 2300,
         },
         {
             "short": "1e",
-            "text": "Friedwald",
-            "price": 500,
+            "text": "im Friedwald",
+            "price": 1000,
         },
         {
             "short": "1f",
-            "text": "Seebestattung",
+            "text": "zur See",
             "price": 1000,
         },
         {
             "short": "1g",
-            "text": "Almwiesenbestattung (Schweiz)",
+            "text": "auf der Almwiese (Schweiz)",
             "price": 1000,
         },
         {
             "short": "1h",
-            "text": "Diamantbestattung",
-            "price": 3000,
+            "text": "als Diamant",
+            "price": 64500,
         },
         {
             "short": "1i",
-            "text": "Streuwiesenbestattung",
+            "text": "auf der Streuwiese",
             "price": 1500,
         },
         {
             "short": "1j",
-            "text": "Flussbestattung (Holland)",
+            "text": "im Fluss (Holland)",
             "price": 2000,
         },
         {
             "short": "1k",
-            "text": "Luftbestattung (aus dem Heißluftballon) (Elsaß)",
-            "price": 750,
+            "text": "aus dem Heißluftballon (Elsaß)",
+            "price": 1800,
         },
         {
             "short": "1l",
-            "text": "Anonyme Bestattung",
-            "price": 30,
+            "text": "anonym",
+            "price": 1800,
         }
     ],
     [{
             "short": "2a",
-            "text": "Professionell von einem Bestattungsunternehmen",
-            "price": 500,
+            "text": "Einkleidung, Waschung: Bestattungsunternehmen",
+            "price": 200,
         },
         {
             "short": "2b",
-            "text": "Ganz persönlich von Freund:innen und Familie",
-            "price": 1000,
+            "text": "Einkleidung, Waschung: Freund:innen und Familie",
+            "price": 0,
         },
         {
             "short": "2c",
-            "text": "Bestattungsunternehmen gemeinsam mit Familie und Freund:innen",
-            "price": 400,
+            "text": "Einkleidung, Waschung: Bestattungsunternehmen + Familie und Freund:innen",
+            "price": 200,
         }
     ],
     [{
             "short": "3a",
-            "text": "Etwas eigenes",
-            "price": 300,
+            "text": "Totengewand: eigene Kleidung",
+            "price": 0,
         },
         {
             "short": "3b",
-            "text": "Das letzte Hemd",
-            "price": 450,
+            "text": "Totengewand: das letzte Hemd",
+            "price": 359,
         }
     ],
     [{
             "short": "4a",
-            "text": "ja",
-            "price": 400,
+            "text": "Aufbahrung",
+            "price": 125,
         },
         {
             "short": "4b",
             "text": "nein",
-            "price": 600,
+            "price": 0,
         }
     ],
     [{
             "short": "5a",
-            "text": "Mahagoni",
-            "price": 3000,
+            "text": "Sarg Mahagoni",
+            "price": 1900,
         },
         {
             "short": "5b",
-            "text": "Wildeiche",
-            "price": 4000,
+            "text": "Sarg Wildeiche",
+            "price": 2100,
         },
         {
             "short": "5c",
             "text": "Truhe modern",
-            "price": 4500,
+            "price": 1650,
         },
         {
             "short": "5d",
@@ -143,239 +143,239 @@ const answers = [
         },
         {
             "short": "5e",
-            "text": "Fußballurne",
-            "price": 450,
+            "text": "Urne Fußball",
+            "price": 295,
         },
         {
             "short": "5f",
-            "text": "Birkenurne",
-            "price": 600,
+            "text": "Urne Birke",
+            "price": 395,
         },
         {
             "short": "5g",
-            "text": "Swarowski-Urne",
-            "price": 1000,
+            "text": "Urne Swarowski",
+            "price": 5000,
         },
         {
             "short": "5h",
             "text": "Filz- oder Häkelurne à la Mielich",
-            "price": 400,
+            "price": 27,
         }
     ],
     [{
             "short": "6a",
             "text": "Trauerredner:in",
-            "price": 300,
+            "price": 350,
         },
         {
             "short": "6b",
-            "text": "Pfarrer:in (evangelisch)",
+            "text": "Trauerrede: Pfarrer:in (evangelisch)",
             "price": 0,
         },
         {
             "short": "6c",
-            "text": "Pfarrer (katholisch)",
-            "price": 0,
+            "text": "Trauerrede: Pfarrer (katholisch), Taxi",
+            "price": 70,
         },
         {
             "short": "6d",
-            "text": "Imam",
+            "text": "Trauerrede: Imam",
             "price": 0,
         },
         {
             "short": "6e",
-            "text": "Rabbi",
+            "text": "Trauerrede: Rabbi",
             "price": 0,
         },
         {
             "short": "6f",
-            "text": "Sie überreden jemanden aus Ihrem Zugehörigenkreis, die Rede zu halten",
+            "text": "Trauerrede: Zugehörigenkreis",
             "price": 0,
         }
     ],
     [{
             "short": "7a",
             "text": "Ja",
-            "price": 700,
+            "price": 0,
         },
         {
             "short": "7b",
             "text": "Nein",
-            "price": 950,
+            "price": 0,
         }
     ],
     [{
             "short": "8a",
-            "text": "ZEIT",
-            "price": 100,
+            "text": "Traueranzeige in der ZEIT",
+            "price": 8.93,
         },
         {
             "short": "8b",
-            "text": "Süddeutsche Zeitung",
-            "price": 150,
+            "text": "Traueranzeige in der Süddeutschen Zeitung",
+            "price": 4.76,
         },
         {
             "short": "8c",
-            "text": "Frankfurter Allgemeine Zeitung",
-            "price": 200,
+            "text": "Traueranzeige in der Frankfurter Allgemeinen Zeitung",
+            "price": 6.43,
         },
         {
             "short": "8d",
-            "text": "Regionale Zeitung",
-            "price": 50,
+            "text": "Traueranzeige in einer Regionalzeitung",
+            "price": 2.73,
         }
     ],
     [{
             "short": "9a",
-            "text": "28 x 21",
-            "price": 56,
+            "text": ", 28 x 21cm",
+            "price": 1260,
         },
         {
             "short": "9b",
-            "text": "14 x 15",
-            "price": 28,
+            "text": ", 14 x 15cm",
+            "price": 450,
         },
         {
             "short": "9c",
-            "text": "4,5 x 5",
-            "price": 59,
+            "text": ", 4,5 x 5cm",
+            "price": 50,
         }
-    ], 
+    ],
     [{
             "short": "10a",
-            "text": "Mit Bluetooth-Box",
-            "price": 0,
+            "text": "Bluetooth-Box spielt",
+            "price": 125,
         },
         {
             "short": "10b",
-            "text": "Mit Streichquartett",
-            "price": 1000,
+            "text": "Streichquartett mit",
+            "price": 800,
         },
         {
             "short": "10c",
-            "text": "Orgel",
-            "price": 50,
+            "text": "Orgel mit",
+            "price": 125,
         },
         {
             "short": "10d",
-            "text": "Gesang",
+            "text": "Sänger:in mit",
             "price": 250,
         }
     ],
     [{
             "short": "11a",
-            "text": "J.S. Bach - Chaconne",
-            "price": 10,
-            "id": "132689716",
+            "text": "Chaconne (J.S. Bach)",
+            "price": 0,
+            "id": "zNs98hh_v9g",
         },
         {
             "short": "11b",
-            "text": "Leonard Cohen - Hallelujah",
-            "price": 10,
-            "id": "402902131",
+            "text": "Hallelujah (Leonard Cohen)",
+            "price": 0,
+            "id": "VK5V_EzGMzE",
         },
         {
             "short": "11c",
-            "text": "Nina Simone - Ain’t got no, I got life",
-            "price": 10,
-            "id": "188080842",
+            "text": "Ain’t got no, I got life (Nina Simone)",
+            "price": 0,
+            "id": "giFPrv0DwOA",
         },
         {
             "short": "11d",
-            "text": "Zülfü Livaneli - Leylim Ley",
-            "price": 10,
-            "id": "9387983",
+            "text": "Leylim Ley (Zülfü Livaneli)",
+            "price": 0,
+            "id": "u1yiwaFQf70",
         },
         {
             "short": "11e",
-            "text": "Björk - I remember you",
-            "price": 10,
-            "id": "68675931",
+            "text": "I remember you (Björk)",
+            "price": 0,
+            "id": "YTeP5UVtvrc",
         }
     ],
     [{
             "short": "12a",
             "text": "Belegte Brötchen + Kaffee und Kuchen",
-            "price": 200,
+            "price": 19,
         },
         {
             "short": "12b",
             "text": "Antipasti",
-            "price": 300,
+            "price": 35,
         },
         {
             "short": "12c",
             "text": "Sterneküche",
-            "price": 1000,
+            "price": 50,
         }
     ],
     [{
             "short": "13a",
-            "text": "5",
-            "price": 100,
+            "text": "für 5 Gäste",
+            "price": 5,
         },
         {
             "short": "13b",
-            "text": "50",
-            "price": 1000,
+            "text": "für 50 Gäste",
+            "price": 50,
         },
         {
             "short": "13c",
-            "text": "150",
-            "price": 3000,
+            "text": "für 150 Gäste",
+            "price": 150,
         },
         {
             "short": "13d",
-            "text": "500",
-            "price": 10000,
+            "text": "für 500 Gäste",
+            "price": 500,
         }
     ],
     [{
             "short": "14a",
-            "text": "Professionelle Gärtnerei",
-            "price": 1000,
+            "text": "Grapflege durch Professionelle Gärtnerei",
+            "price": 9500,
         },
         {
             "short": "14b",
-            "text": "Zugehörigenkreis",
-            "price": 0,
+            "text": "Grapflege durch Zugehörigenkreis",
+            "price": 1600,
         },
         {
             "short": "14c",
-            "text": "Keine:r",
+            "text": "Keine Grabpflege",
             "price": 0,
         }
     ],
     [{
             "short": "15a",
-            "text": "zu Hause",
-            "price": 1000,
+            "text": "Transport ab Haus / Wohnung",
+            "price": 200,
         },
         {
             "short": "15b",
-            "text": "Krankenhaus",
-            "price": 500,
+            "text": "Transport ab Krankenhaus",
+            "price": 30,
         }
     ],
     [{
             "short": "16a",
-            "text": "Frühling",
-            "price": 10,
+            "text": "Blumenkranz mit Gladiolen",
+            "price": 300,
         },
         {
             "short": "16b",
-            "text": "Sommer",
-            "price": 20,
+            "text": "Blumenkranz mit Rosen",
+            "price": 300,
         },
         {
             "short": "16c",
-            "text": "Herbst",
-            "price": 30,
+            "text": "Blumenkranz mit Sonnenblumen",
+            "price": 300,
         },
         {
             "short": "16d",
-            "text": "Winter",
-            "price": 40,
+            "text": "Blumenkranz mit Protea",
+            "price": 300,
         }
     ],
 ]
@@ -494,13 +494,41 @@ function getAnswers(scannedCodewords) {
             }
         }
     }
-    if (mappingErrors > maxMappingErrors){
-        return null;
-    }
-    if (choices.length < 5) {
+    if (mappingErrors > maxMappingErrors) {
         return null;
     }
     choices.sort((a, b) => (a.answer.sortingIndex > b.answer.sortingIndex) ? 1 : -1);
+
+    let newspaper = false;
+    let occurances = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let allowedMax = [2, 1, 1, 1, 1, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 1];
+    let allowedMin = [1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1];
+
+    choices.forEach((choice)=>{
+        let questionIndex = parseInt(choice.answer.short.replace(/[a-z]/g, ''));
+        let questionChar = choice.answer.short.replace(/[0-9]/g, '');
+        if(questionIndex === 7 && questionChar === 'a'){
+            newspaper = true;
+        }
+        occurances[questionIndex-1]++;
+    });
+    
+    let validation = true;
+
+    if((occurances[7] === 0 || occurances[8] === 0) && newspaper){
+        validation = false;
+    }
+
+    occurances.forEach((occurance, index)=>{
+        if(occurance > allowedMax[index] || occurance < allowedMin[index]){
+            validation = false;
+        }
+    });
+
+    if(!validation)
+        return null;
+
+    
     return choices;
 }
 

@@ -23,10 +23,10 @@ exports.board = function(req, res) {
                 } else {
                     user.sessionStart = Date.now();
                     user.lastRequest = Date.now();
-                    user.level = user.level === 0 ? 1 : user.level;
+                    user.level = user.level === 0 ? 3 : user.level;
                     res
-                        .cookie('user', user._id, { maxAge: 2 * 60 * 60 * 1000, httpOnly: true, SameSite: "strict" })
-                        .json({ status: "go", level: user.level, html: html[1], help: help[1] });
+                        .cookie('user', user._id, { maxAge: 4 * 60 * 60 * 1000, httpOnly: true, SameSite: "strict" })
+                        .json({ status: "go", level: user.level, html: html[user.level], help: help[user.level] });
                     user.save();
                 }
             });
@@ -129,16 +129,18 @@ function boarding_room(req, res, user) {
 
 // ******* 3 Waiting in front of the bus ******* //
 function wait_before_bus(req, res, user) {
-    users.countDocuments((err, count) => {
-        let userCount = count;
-        users.countDocuments({ level: 3 }, (err, count) => {
-            let boardingCount = count;
-            if (levelChange(user) || req.query.reload) {
-                res.json({ status: "go", level: user.level, html: html[user.level], users: userCount, boarded: boardingCount, help: help[user.level] });
-            } else {
-                res.json({ status: "wait", level: user.level, users: userCount, boarded: boardingCount });
-            }
+    levelChange(user, (change) => {
+        users.countDocuments((err, count) => {
+            let userCount = count;
+            users.countDocuments({ level: 3 }, (err, count) => {
+                let boardingCount = count;
+                if (change || req.query.reload) {
+                    res.json({ status: "go", level: user.level, html: html[user.level], users: userCount, boarded: boardingCount, help: help[user.level] });
+                } else {
+                    res.json({ status: "wait", level: user.level, users: userCount, boarded: boardingCount });
+                }
 
+            });
         });
     });
 }
@@ -146,26 +148,32 @@ function wait_before_bus(req, res, user) {
 
 // ******* 4 Bus Journey ******* //
 function bus_journey(req, res, user) {
-    let change = levelChange(user);
-    if (change || req.query.reload) {
-        let reload = req.query.reload && !change ? true : false;
-        console.log(reload);
-        let playbackTime = user.playbackTime ? user.playbackTime : 0;
-        res.json({ status: "go", level: user.level, html: html[user.level], playbackTime: playbackTime, help: help[user.level], reload: reload });
-    } else {
-        user.playbackTime = req.query.playbackTime;
-        user.save();
-        res.json({ status: "wait", level: user.level })
-    }
+    levelChange(user, (change) => {
+
+        if (change || req.query.reload) {
+            let reload = req.query.reload && !change ? true : false;
+            console.log(reload);
+            let playbackTime = user.playbackTime ? user.playbackTime : 0;
+            res.json({ status: "go", level: user.level, html: html[user.level], playbackTime: playbackTime, help: help[user.level], reload: reload });
+        } else {
+            if (req.query.playbackTime) {
+                user.playbackTime = req.query.playbackTime;
+                user.save();
+            }
+            res.json({ status: "wait", level: user.level })
+        }
+    });
 }
 
 // ******* 5 questionnaire ******* //
 function scan_questionnaire(req, res, user) {
-    if (levelChange(user) || req.query.reload) {
-        res.json({ status: "go", level: user.level, html: html[user.level], help: help[user.level] });
-    } else {
+    levelChange(user, (change) => {
+        if (change || req.query.reload) {
+            res.json({ status: "go", level: user.level, html: html[user.level], help: help[user.level] });
+        } else {
 
-    }
+        }
+    });
 }
 
 // ******* 6 cemetry ******* //
@@ -179,12 +187,13 @@ function cemetry(req, res, user) {
 
     } else if (req.query.reload) {
         let reload = req.query.reload ? true : false;
-        res.json({ status: "go", level: user.level, html: html[user.level], videoId: user.videoId, reload: reload, name: user.name, help: help[user.level] });
+        res.json({ status: "go", level: user.level, html: html[user.level], videoId: user.videoId, reload: reload, name: user.name, help: help[user.level], playbackTime: user.playbackTime });
     } else {
-        user.playbackTime = req.query.playbackTime;
-        user.playbackTime2 = req.query.playbackTime2;
+        if (req.query.playbackTime) {
+            user.playbackTime = req.query.playbackTime;
+            user.save();
+        }
         res.json({ status: "wait", level: user.level });
-        user.save();
     }
 }
 
@@ -193,14 +202,14 @@ function after_talk(req, res, user) {
     res.json({ status: "go", level: user.level, html: html[user.level], help: help[user.level] });
 }
 
-function levelChange(user) {
+function levelChange(user, callback) {
     if (user.level != user.prevLevel) {
         user.prevLevel = user.level;
         user.save(() => {
-            return true;
+            callback(true);
         })
     } else {
-        return false;
+        callback(false)
     }
 }
 
@@ -226,6 +235,6 @@ exports.sendUser2MainRoom = function(req, res) {
 
 exports.startJourney = function(req, res) {
     console.log("startJourney");
-    users.updateMany({ active: true }, { level: 4 }, function(err, res) {});
+    users.updateMany({ active: true, level: 3 }, { level: 4 }, function(err, res) {});
     res.json({ status: "go" });
 }

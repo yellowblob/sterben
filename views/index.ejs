@@ -29,8 +29,17 @@
                     Willkommen zur heutigen Vorstellung. Schön, dass Sie da sind.
                 </p>
                 <p>
-                    Wir werden gleich beginnen. Haben Sie alles bereit? Sie benötigen das Magazin, ihr Ticket, den großen QR-Code und den Edding.<br>
-                    Wenn Sie bereit sind, klicken sie auf <i>Start</i>.
+                    Wir beginnen gleich. Haben Sie alles bereit?  Sie benötigen das Magazin (oder den ausgedruckten Fragebogen), Ihr Ticket, den großen QR-Code und einen Edding.
+                </p>
+                <p>
+                    Falls Sie einen anderen Browser als Firefox oder Chrome nutzen, bitten wir Sie dies JETZT zu ändern und noch einmal über <b>Firefox</b> oder <b>Google Chrome</b> auf die Seite besser-sterben.com zu gehen.
+                </p>
+                <p>
+                    <b>Wichtiger Hinweis:</b><br>
+                    Wenn Sie als Team teilnehmen, brauchen Sie alles jeweils EIN mal. Halten Sie bitte zu Beginn der Vorstellung nur EIN Ticket in die Kamera. Dafür müssen Sie auf der nächsten Seite, wenn ein entsprechendes Fenster erscheint, den Zugriff auf Ihre Kamera erlauben.
+                </p>
+                <p>
+                    Alles parat? Dann klicken Sie auf Start.
                 </p>
                 <button id="start-show" type="button" class="btn btn-primary">Start</button>
             </div>
@@ -40,43 +49,51 @@
         <h3 class="mb-0">?</h3>
     </button>
     <div id="help" class="bg-dark text-white p-3">
-        <div class="d-flex justify-content-end">
-            <div id="help-close">
-                <svg width="100%" height="100%" viewBox="0 0 625 192" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
-                    <g transform="matrix(4.16667,0,0,4.16667,-300.997,-200.56)">
-                        <g transform="matrix(-1,-1.22465e-16,1.22465e-16,-1,322.98,142.269)">
-                            <path d="M246.962,71.135L192.031,51.145C192.031,51.145 212.081,71.135 192.031,91.124L246.962,71.135Z" style="fill:white;fill-rule:nonzero;" />
+        <div id="help-header">
+            <div class="d-flex justify-content-end">
+                <div id="help-close">
+                    <svg width="100%" height="100%" viewBox="0 0 625 192" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+                        <g transform="matrix(4.16667,0,0,4.16667,-300.997,-200.56)">
+                            <g transform="matrix(-1,-1.22465e-16,1.22465e-16,-1,322.98,142.269)">
+                                <path d="M246.962,71.135L192.031,51.145C192.031,51.145 212.081,71.135 192.031,91.124L246.962,71.135Z" style="fill:white;fill-rule:nonzero;" />
+                            </g>
+                            <g transform="matrix(0.268287,0,0,0.268287,-68.6216,-13.74)">
+                                <circle cx="1049.53" cy="316.357" r="20.524" style="fill:white;" />
+                            </g>
+                            <g transform="matrix(0.268287,0,0,0.268287,-102.585,-13.7405)">
+                                <circle cx="1049.53" cy="316.357" r="20.524" style="fill:white;" />
+                            </g>
+                            <g transform="matrix(0.268287,0,0,0.268287,-136.646,-13.74)">
+                                <circle cx="1049.53" cy="316.357" r="20.524" style="fill:white;" />
+                            </g>
                         </g>
-                        <g transform="matrix(0.268287,0,0,0.268287,-68.6216,-13.74)">
-                            <circle cx="1049.53" cy="316.357" r="20.524" style="fill:white;" />
-                        </g>
-                        <g transform="matrix(0.268287,0,0,0.268287,-102.585,-13.7405)">
-                            <circle cx="1049.53" cy="316.357" r="20.524" style="fill:white;" />
-                        </g>
-                        <g transform="matrix(0.268287,0,0,0.268287,-136.646,-13.74)">
-                            <circle cx="1049.53" cy="316.357" r="20.524" style="fill:white;" />
-                        </g>
-                    </g>
-                </svg>
+                    </svg>
+                </div>
             </div>
+            <h3 class="pt-2">Hilfestellung</h3>
         </div>
-        <h3 class="pt-2">Hilfestellungen</h3>
-        <div id="help-content">
-            <p>
-                Sie befinden sich auf der Startseite der Vorstellung.
-            </p>
-            <p>
-                Sie müssen hier nichts weiter tun, als auf den türkisen Knopf zu drücken, der mit Start beschriftet ist.
-            </p>
-        </div>
-        <hr class="border-white">
-        <div id="help-contact">
-            <p>Sollten Sie einmal nicht weiterkommen, können sie sich auch Hilfe unter der folgenden Telefonnummer holen:<br><br>01522 7567431</p>
+        <div id="help-scroller">
+            <div id="help-content">
+                <p>
+                    Sie befinden sich auf der Startseite der Vorstellung.
+                </p>
+                <p>
+                    Sie müssen hier nicht weiter tun als auf den türkisenen Knopf zu drücken, der mit Start beschriftet ist.
+                </p>
+            </div>
+            <hr class="border-white">
+            <div id="help-contact">
+                <p>Sollten Sie das Gefühl haben, dass es nicht weiter geht, hilft es manchmal die Seite neu zu laden.</p>
+                <p>Sollten Sie einmal trotzdem nicht weiterkommen können Sie sich Hilfe bei der Besser Sterben-Hotline holen:<br><br>+49 (0)221 99981322</p>
+                <p id="fullscreen">Vollbildmodus</p>
+            </div>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-    <script src="https://player.vimeo.com/api/player.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+    <!-- <script src="https://player.vimeo.com/api/player.js"></script> -->
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script type="module" src="javascripts/onboarding.js"></script>
 </body>
 
