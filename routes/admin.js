@@ -20,8 +20,9 @@ router.get('/', function(req, res, next) {
                         res.json({ status: "rejected" });
                     } else {
                     	console.log("granted");
+                        console.log(admin);
                         res
-                            .cookie('admin', admin._id, { maxAge: 2 * 60 * 60 * 1000, httpOnly: true, SameSite: "strict" })
+                            .cookie('admin', admin._id, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true, SameSite: "strict" })
                             .json({ status: 'access' });
                     }
                 });
@@ -40,7 +41,7 @@ router.get('/', function(req, res, next) {
     }
 });
 
-router.get('/refresh', user_controller.getUsersBoarding);
+router.get('/refresh', user_controller.getUsers);
 
 router.get('/setmain', user_controller.sendUser2MainRoom);
 

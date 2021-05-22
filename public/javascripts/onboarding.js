@@ -162,7 +162,7 @@ let insideWidth;
 let name;
 let audio;
 let audioIndex = 1;
-let audioMax = 6;
+let audioMax = 9;
 let userCount = 0;
 let boardingCount = 0;
 let scannedTicket = false;
@@ -325,7 +325,7 @@ jQuery(document).ready(function($) {
 
     function display_outside_bus(data) {
         if (data.status === "go") {
-            if (!data.reaload) {
+            if (scanner) {
                 scanner.stop();
             }
             updateHelp(data.help)
@@ -340,7 +340,7 @@ jQuery(document).ready(function($) {
         }
         userCount = data.users;
         boardingCount = data.boarded;
-        if (data.boarded == 1) {
+        if (data.boarded === 1 || data.boarded === 0) {
             $("#guests").text("Sie sind der erste Gast.");
         } else {
             $("#guests").text(data.boarded + " Gäste sind schon da.");
@@ -351,14 +351,24 @@ jQuery(document).ready(function($) {
         }, standartTimeout);
     }
 
+    function pad(num, size) {
+        num = num.toString();
+        while (num.length < size) num = "0" + num;
+        return num;
+    }
+
     function startPlay() {
         if (audio == null || audio.paused) {
-            audio = new Audio('/audio/waiting/0' + audioIndex + '.aac');
+            let audioIndexString = pad(audioIndex,2);
+            audio = new Audio('/audio/waiting/' + audioIndexString + '.aac');
             audio.play();
             audio.onended = function() {
                 console.log('audioIndex:' + audioIndex);
                 if (audioIndex <= audioMax) {
                     audioIndex++;
+                    startPlay();
+                } else {
+                    audioIndex = 1;
                     startPlay();
                 }
             };
@@ -645,7 +655,7 @@ jQuery(document).ready(function($) {
         $('#fireworks-wrapper').fadeIn();
         audio = new Audio('/audio/fireworks.aac');
         audio.play();
-        var duration = 7 * 1000;
+        var duration = 12.5 * 1000;
         var animationEnd = Date.now() + duration;
         var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
 
@@ -670,6 +680,7 @@ jQuery(document).ready(function($) {
     function display_cemetry_youtube(data) {
         if (data.status === "go") {
             updateHelp(data.help);
+
             $("#page").after(data.html);
             totalPrice = Math.floor(totalPrice);
             $("#sum-text").text(totalPrice + '€');
@@ -682,8 +693,14 @@ jQuery(document).ready(function($) {
             let startSeconds = 0;
             if (data.reload) {
                 openFullscreen();
-                console.log(data.playbackTime);
                 startSeconds = data.playbackTime;
+                $('#help').append('<button id="start-video" type="button" class="btn btn-primary">Play</button>');
+                $('#start-video').click(() => {
+                    player.playVideo();
+                    setTimeout(() => {
+                        $("#cover").fadeOut();
+                    }, 3000);
+                });
             }
 
 
@@ -705,7 +722,9 @@ jQuery(document).ready(function($) {
             function onPlayerReady(event) {
                 console.log('Playerready');
                 if (data.reload) {
-                    $("#cover").fadeIn(1500);
+                    $("#cover").fadeIn(1500, () => {
+                        $("#vimeo-wrapper-wrapper").show();
+                    });
                     startCemetry(event)
                 } else {
                     button2 = $("#correct");
@@ -713,8 +732,10 @@ jQuery(document).ready(function($) {
                         audio.pause();
                         fireworks();
                         openFullscreen();
-                        $("#cover").fadeIn(1500);
-                        setTimeout(() => { startCemetry(event) }, 5000);
+                        $("#cover").fadeIn(1500, () => {
+
+                        });
+                        setTimeout(() => { startCemetry(event) }, 11000);
                     });
                 }
 
@@ -722,25 +743,21 @@ jQuery(document).ready(function($) {
             done = false;
             let playedName = false;
 
-            function startCemetry(event) {
-
-                $("#hide-pip").show();
-                event.target.playVideo();
-
-            }
-
             function onPlayerStateChange(event) {
+                console.log(YT.PlayerState);
+                console.log(event.data);
                 if (event.data == YT.PlayerState.PLAYING && !done) {
+                    console.log("Playing");
                     $('#fireworks-wrapper').fadeOut(1500);
                     if (!data.reload) {
                         fadeAndStopAudio();
+                        setTimeout(() => {
+                            $("#vimeo-wrapper-wrapper").show();
+                        }, 1500);
                     }
-                    setTimeout(() => {
-                        $("#vimeo-wrapper-wrapper").show();
-                    }, 1500);
+
                     setTimeout(() => {
                         $("#cover").fadeOut();
-
                     }, 3000);
                     let ytEndTimer = setInterval(() => {
                         if (player.getCurrentTime() >= 1500) {
@@ -772,6 +789,13 @@ jQuery(document).ready(function($) {
                 ask4Task();
             }
         }, standartTimeout);
+    }
+
+    function startCemetry(event) {
+        $("#hide-pip").show();
+        console.log("beforeStart")
+        event.target.playVideo();
+        console.log("afterStart")
     }
 
     function display_after_talk(data) {
@@ -807,222 +831,6 @@ jQuery(document).ready(function($) {
             })
         } else {
             $("#help-content").html(text);
-        }
-    }
-    ///////////////  legacy ///////////////
-    function display_queue(data) {
-        if (data.status === "go") {
-            if (scanner) {
-                scanner.stop();
-            }
-            $("#content").html(data.html);
-            updateHelp(data.help);
-            $("#content").fadeIn();
-        } else {
-            if (data.queue === 0) {
-                $("#queue").text("Sie werden gleich in den nächsten freien Raum weitergeleitet.");
-            } else {
-                $("#queue").text("Es sind noch " + data.queue + " Personen vor Ihnen in der Schlange");
-            }
-        }
-        clearTimeout(timer);
-        timer = setTimeout(function() {
-            ask4Task();
-        }, standartTimeout);
-    }
-
-    function display_boarding_room(data) {
-
-        if (data.status === "go") {
-            updateHelp(data.help);
-            console.log(data.url);
-            $("#page").after(data.html);
-            $("#bbb-frame iframe").attr("src", data.url);
-            $("#bbb-frame").fadeIn();
-        }
-        clearTimeout(timer);
-        timer = setTimeout(function() {
-            ask4Task();
-        }, standartTimeout);
-    }
-
-    function display_bus_journey_vimeo(data) {
-        if (data.status === "go") {
-            updateHelp(data.help);
-            $("#page").after(data.html);
-
-            const options = {
-                url: "https://vimeo.com/549897929/f1edab6818",
-                controls: false,
-                width: document.body.clientWidth,
-                pip: false,
-                autopause: false,
-                muted: true,
-            };
-
-            player = new Vimeo.Player('myVideo', options);
-            player.play();
-
-            let button = $("#board");
-
-            if (data.reload === true) {
-                player.setCurrentTime(data.playbackTime);
-            } else {
-                data.playbackTime = 0;
-            }
-
-
-            player.on('timeupdate', function(time) {
-                if (time.seconds >= 1.0 + data.playbackTime) {
-                    player.pause();
-                    player.off('timeupdate');
-                    button.attr("style", "display: inline !important");
-
-                    if (data.reload === true) {
-                        openFullscreen();
-                        player.setCurrentTime(data.playbackTime);
-                        player.setMuted(false);
-                        $("#vimeo-wrapper-wrapper").fadeIn(1500, () => {
-                            $("#hide-pip").show();
-                        });
-                        player.play();
-
-                    } else {
-
-                        button.click(() => {
-                            openFullscreen();
-                            console.log("clicked");
-                            player.setMuted(false);
-                            $("#vimeo-wrapper-wrapper").fadeIn(1500, () => {
-                                $("#hide-pip").show();
-                            });
-                            player.play();
-                        });
-                    }
-                }
-
-            });
-
-            player.play();
-
-            player.on('ended', () => {
-                ask4Task({ playback: false });
-            });
-        }
-        clearTimeout(timer);
-        timer = setTimeout(function() {
-            player.getCurrentTime().then(function(seconds) {
-                ask4Task({ playbackTime: seconds });
-            });
-        }, standartTimeout);
-    }
-
-    function display_cemetry_vimeo(data) {
-        if (data.status === "go") {
-            openFullscreen();
-            updateHelp(data.help)
-            let videoId = data.videoId;
-            console.log(videoId);
-            $("#page").after(data.html);
-            const options = {
-                id: 435993761,
-                controls: false,
-                width: document.body.clientWidth,
-                pip: false,
-                autopause: false,
-                muted: true,
-            };
-
-            name = data.name;
-
-            const options2 = {
-                id: videoId,
-                controls: false,
-                width: document.body.clientWidth,
-                pip: false,
-                autopause: false,
-                muted: true,
-            };
-
-            player = new Vimeo.Player('myVideo', options);
-
-            player.on('timeupdate', start_video2);
-            player.on('timeupdate', play_name);
-
-            player.play();
-
-            player.on('ended', () => {
-                ask4Task({ playback: false });
-            });
-
-            player2 = new Vimeo.Player('myVideo-2', options2);
-            player2.play();
-            button2 = $("#correct");
-            player2.on('timeupdate', start_video);
-            player2.on('timeupdate', switch_video);
-            if (data.reload === true) {
-                setTimeout(() => {
-                    openFullscreen();
-                    player.setMuted(false);
-                    player2.setMuted(false);
-                    $("#vimeo-wrapper-wrapper-2").fadeIn(1500, () => {
-                        $("#hide-pip").show();
-                    });
-                    player2.play();
-                    player2.off('timeupdate', start_video);
-                }, 1500);
-            }
-        }
-        clearTimeout(timer);
-        timer = setTimeout(function() {
-            player.getCurrentTime().then(function(seconds) {
-                player2.getCurrentTime().then(function(seconds2) {
-                    ask4Task({ playbackTime: seconds, playbackTime2: seconds2 });
-                });
-            });
-        }, standartTimeout);
-    }
-
-    const start_video = function(data) {
-        if (data.seconds >= 1.0) {
-            player2.pause();
-            button2.click(() => {
-                openFullscreen();
-                console.log("clicked");
-                player.setMuted(false);
-                player2.setMuted(false);
-                $("#vimeo-wrapper-wrapper-2").fadeIn(1500, () => {
-                    $("#hide-pip").show();
-                });
-                player2.play();
-                player2.off('timeupdate', start_video);
-            });
-        }
-    }
-
-    const switch_video = function(data) {
-        if (data.seconds >= 30) {
-            player2.off('timeupdate', switch_video);
-            console.log("30");
-            player.play();
-            $("#vimeo-wrapper-wrapper").show();
-            $("#vimeo-wrapper-wrapper-2").hide();
-            player2.pause();
-        }
-    }
-
-    const start_video2 = function(data) {
-        if (data.seconds >= 1.0) {
-            player.pause();
-            player.off('timeupdate', start_video2);
-        }
-    }
-
-    const play_name = function(time) {
-        if (time.seconds >= 15.0) {
-            var audio = new Audio('/audio/' + name + '.mp3');
-            audio.play();
-            player.off('timeupdate', play_name);
         }
     }
 

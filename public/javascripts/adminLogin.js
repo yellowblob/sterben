@@ -27,7 +27,7 @@ jQuery(document).ready(function($) {
         const insideWidth = $("#message").width();
         $("#check-in").submit(function(event) {
             event.preventDefault();
-            let ticketId = $("#ticket-id").val().toLowerCase();
+            let ticketId = $("#ticket-id").val();
             ask4task({ ticketId: ticketId });
         });
 

@@ -24,10 +24,14 @@ exports.board = function(req, res) {
                     user.sessionStart = Date.now();
                     user.lastRequest = Date.now();
                     user.level = user.level === 0 ? 3 : user.level;
-                    res
-                        .cookie('user', user._id, { maxAge: 4 * 60 * 60 * 1000, httpOnly: true, SameSite: "strict" })
-                        .json({ status: "go", level: user.level, html: html[user.level], help: help[user.level] });
-                    user.save();
+
+                    users.countDocuments({ level: 3 }, (err, count) => {
+                        let boardingCount = count;
+                        res
+                            .cookie('user', user._id, { maxAge: 4 * 60 * 60 * 1000, httpOnly: true, SameSite: "strict" })
+                            .json({ status: "go", level: user.level, html: html[user.level], help: help[user.level], boarded: boardingCount });
+                        user.save();
+                    });
                 }
             });
         } else {
@@ -45,7 +49,7 @@ exports.board = function(req, res) {
                 user.level = 1;
             }
             if (req.query.playback) {
-                if (user.level < 5) {
+                if (user.level <= 5) {
                     user.level = 5;
                 } else {
                     user.level = 7;
@@ -230,6 +234,12 @@ exports.sendUser2MainRoom = function(req, res) {
             room.save();
             res.json({ status: "go" });
         });
+    });
+}
+
+exports.getUsers = function(req, res) {
+    users.find({}, 'name level lastRequest _id', function(err, users) {
+        res.json(users);
     });
 }
 
