@@ -25,12 +25,14 @@ exports.board = function(req, res) {
                     user.lastRequest = Date.now();
                     user.level = user.level === 0 ? 3 : user.level;
 
-                    users.countDocuments({ level: 3 }, (err, count) => {
-                        let boardingCount = count;
-                        res
-                            .cookie('user', user._id, { maxAge: 4 * 60 * 60 * 1000, httpOnly: true, SameSite: "strict" })
-                            .json({ status: "go", level: user.level, html: html[user.level], help: help[user.level], boarded: boardingCount });
-                        user.save();
+                    levelChange(user, (change) => {
+                        users.countDocuments({ level: 3 }, (err, count) => {
+                            let boardingCount = count;
+                            res
+                                .cookie('user', user._id, { maxAge: 4 * 60 * 60 * 1000, httpOnly: true, SameSite: "strict" })
+                                .json({ status: "go", level: user.level, html: html[user.level], help: help[user.level], boarded: boardingCount });
+                            user.save();
+                        });
                     });
                 }
             });
@@ -49,9 +51,10 @@ exports.board = function(req, res) {
                 user.level = 1;
             }
             if (req.query.playback) {
-                if (user.level <= 5) {
+                user.playbackTime = 0;
+                if (user.level = 4) {
                     user.level = 5;
-                } else {
+                } else if (user.level = 6) {
                     user.level = 7;
                 }
             }
@@ -173,7 +176,8 @@ function bus_journey(req, res, user) {
 function scan_questionnaire(req, res, user) {
     levelChange(user, (change) => {
         if (change || req.query.reload) {
-            res.json({ status: "go", level: user.level, html: html[user.level], help: help[user.level] });
+            let reload = req.query.reload && !change ? true : false;
+            res.json({ status: "go", level: user.level, html: html[user.level], help: help[user.level], reload: reload });
         } else {
 
         }

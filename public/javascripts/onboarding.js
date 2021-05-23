@@ -2,6 +2,8 @@ import QrScanner from "../javascripts/qr-scanner.js";
 import { getAnswers } from "../javascripts/questions.js";
 QrScanner.WORKER_PATH = '../javascripts/worker.js';
 
+var requestWorker = new Worker('requestWorker.js');
+
 const standartTimeout = 5000;
 
 const answers0815 = [{
@@ -155,7 +157,6 @@ let scanner;
 let interval;
 let timer;
 let player;
-let player2
 let answers;
 let button2;
 let insideWidth;
@@ -167,6 +168,8 @@ let userCount = 0;
 let boardingCount = 0;
 let scannedTicket = false;
 let totalPrice = 0;
+let requestInterval;
+let options = {};
 
 jQuery(document).ready(function($) {
 
@@ -217,10 +220,18 @@ jQuery(document).ready(function($) {
         });
     });
 
+    
+
     function ask4Task(params) {
         $.get("/board", params, function(data, status) {
             console.log(data);
             var level = data.level;
+            if (data.reload === true) {
+                console.log("set Interval");
+                requestInterval = setInterval(() => {
+                    ask4Task(options);
+                }, standartTimeout);
+            }
             switch (level) {
                 case 0:
                     scan_ticket(data);
@@ -324,7 +335,14 @@ jQuery(document).ready(function($) {
     }
 
     function display_outside_bus(data) {
+        console.log("display bus");
         if (data.status === "go") {
+            if (requestInterval) {
+                clearInterval(requestInterval);
+            }
+            requestInterval = setInterval(() => {
+                ask4Task(options);
+            }, standartTimeout);
             if (scanner) {
                 scanner.stop();
             }
@@ -345,10 +363,6 @@ jQuery(document).ready(function($) {
         } else {
             $("#guests").text(data.boarded + " Gäste sind schon da.");
         }
-        clearTimeout(timer);
-        timer = setTimeout(function() {
-            ask4Task();
-        }, standartTimeout);
     }
 
     function pad(num, size) {
@@ -359,7 +373,7 @@ jQuery(document).ready(function($) {
 
     function startPlay() {
         if (audio == null || audio.paused) {
-            let audioIndexString = pad(audioIndex,2);
+            let audioIndexString = pad(audioIndex, 2);
             audio = new Audio('/audio/waiting/' + audioIndexString + '.aac');
             audio.play();
             audio.onended = function() {
@@ -422,14 +436,11 @@ jQuery(document).ready(function($) {
             //    the player should play for six seconds and then stop.
             var done = false;
         }
-        setTimeout(() => {
-            if (player.getCurrentTime()) {
-                let playbackTime = Math.floor(player.getCurrentTime());
-                ask4Task({ playbackTime: playbackTime });
-            } else {
-                ask4Task();
-            }
-        }, standartTimeout);
+
+        if (player.getCurrentTime()) {
+            let playbackTime = Math.floor(player.getCurrentTime());
+            options = { playbackTime: playbackTime };
+        }
     }
 
     function startBusJourney(event) {
@@ -445,7 +456,7 @@ jQuery(document).ready(function($) {
         }, 3000);
         let ytEndTimer = setInterval(() => {
             if (player.getCurrentTime() >= 2649) {
-                ask4Task({ playback: false });
+                ask4Task({ playback: false, playbackTime: 0 });
                 clearInterval(ytEndTimer);
             }
         }, 1000);
@@ -473,66 +484,69 @@ jQuery(document).ready(function($) {
     }
 
     function display_questionnaire(data) {
-        updateHelp(data.help);
-        $("#content").html(data.html);
-        $("#vimeo-wrapper-wrapper").fadeOut(() => {
-            player.stopVideo();
-            $("#vimeo-wrapper-wrapper").remove();
-        });
-        $("#hide-pip").remove();
-        $("#cover").remove();
-        setTimeout(() => {
-            audio = new Audio('/audio/qr-code.aac');
-            audio.play();
-        }, 1000)
-        $("#null815").click(() => {
+        if (data.status === "go") {
+            options = {};
+            updateHelp(data.help);
+            $("#content").html(data.html);
+            $("#vimeo-wrapper-wrapper").fadeOut(() => {
+                player.stopVideo();
+                $("#vimeo-wrapper-wrapper").remove();
+            });
+            $("#hide-pip").remove();
+            $("#cover").remove();
+            setTimeout(() => {
+                audio = new Audio('/audio/qr-code.aac');
+                audio.play();
+            }, 1000)
+            $("#null815").click(() => {
 
-            console.log(answers0815);
-            showResults(answers0815);
+                console.log(answers0815);
+                showResults(answers0815);
 
 
 
-        });
+            });
 
-        const video = document.getElementById('qr-video');
+            const video = document.getElementById('qr-video');
 
-        // ####### Web Cam Scanning #######
+            // ####### Web Cam Scanning #######
 
-        QrScanner.hasCamera().then(hasCamera => console.log(hasCamera));
+            QrScanner.hasCamera().then(hasCamera => console.log(hasCamera));
 
-        scanner = new QrScanner(video, (result, error) => {
-            if (error) {
-                //console.log(error);
-            } else {
-                answers = getAnswers(result.codewords);
-                if (answers !== null) {
-                    console.log(answers);
-                    showResults(answers);
+            scanner = new QrScanner(video, (result, error) => {
+                if (error) {
+                    //console.log(error);
+                } else {
+                    answers = getAnswers(result.codewords);
+                    if (answers !== null) {
+                        console.log(answers);
+                        showResults(answers);
+                    }
                 }
-            }
-        });
-        scanner.start();
-        let videoWidth, videoHeight;
-        let getVideoSize = function() {
-            const videoWidth = insideWidth;
-            console.log(video.offsetWidth);
-            const lineCanvas = document.getElementById('line-canvas');
-            const lineContext = lineCanvas.getContext("2d");
-            const videoPseudo = { "videoWidth": videoWidth, "videoHeight": video.videoHeight * videoWidth / video.videoWidth }
-            lineCanvas.width = videoWidth;
-            lineCanvas.height = videoPseudo.videoHeight;
-            const liveScanRegion = calculateScanRegion(videoPseudo);
-            drawLine(lineContext, liveScanRegion.x, liveScanRegion.y, liveScanRegion.x + liveScanRegion.width, liveScanRegion.y);
-            drawLine(lineContext, liveScanRegion.x, liveScanRegion.y + liveScanRegion.width, liveScanRegion.x + liveScanRegion.width, liveScanRegion.y + liveScanRegion.width);
-            drawLine(lineContext, liveScanRegion.x, liveScanRegion.y, liveScanRegion.x, liveScanRegion.y + liveScanRegion.height);
-            drawLine(lineContext, liveScanRegion.x + liveScanRegion.width, liveScanRegion.y, liveScanRegion.x + liveScanRegion.width, liveScanRegion.y + liveScanRegion.height);
+            });
+            scanner.start();
+            let videoWidth, videoHeight;
+            let getVideoSize = function() {
+                const videoWidth = insideWidth;
+                console.log(video.offsetWidth);
+                const lineCanvas = document.getElementById('line-canvas');
+                const lineContext = lineCanvas.getContext("2d");
+                const videoPseudo = { "videoWidth": videoWidth, "videoHeight": video.videoHeight * videoWidth / video.videoWidth }
+                lineCanvas.width = videoWidth;
+                lineCanvas.height = videoPseudo.videoHeight;
+                const liveScanRegion = calculateScanRegion(videoPseudo);
+                drawLine(lineContext, liveScanRegion.x, liveScanRegion.y, liveScanRegion.x + liveScanRegion.width, liveScanRegion.y);
+                drawLine(lineContext, liveScanRegion.x, liveScanRegion.y + liveScanRegion.width, liveScanRegion.x + liveScanRegion.width, liveScanRegion.y + liveScanRegion.width);
+                drawLine(lineContext, liveScanRegion.x, liveScanRegion.y, liveScanRegion.x, liveScanRegion.y + liveScanRegion.height);
+                drawLine(lineContext, liveScanRegion.x + liveScanRegion.width, liveScanRegion.y, liveScanRegion.x + liveScanRegion.width, liveScanRegion.y + liveScanRegion.height);
 
-            $("#content").fadeIn();
-            $("html, body").animate({ scrollTop: $(document).height() - $(window).height() });
-            video.removeEventListener('playing', getVideoSize, false);
-        };
+                $("#content").fadeIn();
+                $("html, body").animate({ scrollTop: $(document).height() - $(window).height() });
+                video.removeEventListener('playing', getVideoSize, false);
+            };
 
-        video.addEventListener('playing', getVideoSize, false);
+            video.addEventListener('playing', getVideoSize, false);
+        }
 
     }
 
@@ -781,14 +795,11 @@ jQuery(document).ready(function($) {
             //    the player should play for six seconds and then stop.
             var done = false;
         }
-        setTimeout(() => {
-            if (player.getCurrentTime()) {
-                let playbackTime = Math.floor(player.getCurrentTime());
-                ask4Task({ playbackTime: playbackTime });
-            } else {
-                ask4Task();
-            }
-        }, standartTimeout);
+
+        if (player.getCurrentTime()) {
+            let playbackTime = Math.floor(player.getCurrentTime());
+            options = { playbackTime: playbackTime };
+        }
     }
 
     function startCemetry(event) {
@@ -808,6 +819,7 @@ jQuery(document).ready(function($) {
             updateHelp(data.help)
             $("#content").html(data.html).fadeIn();
             $("#hide-pip").hide();
+            clearInterval(requestInterval);
         }
     }
 
